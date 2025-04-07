@@ -1,5 +1,5 @@
-@import url('https://code.jquery.com/jquery-3.6.0.min.js');
-@import url('https://apps.wilco.org/utils/wilcostyle/wilcoStyle.css');
+@import url("https://code.jquery.com/jquery-3.6.0.min.js");
+@import url("https://apps.wilco.org/utils/wilcostyle/wilcoStyle.css");
 
 html {
   font-size: 14px;
@@ -11,7 +11,11 @@ html {
   }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
@@ -22,4 +26,17 @@ html {
 
 body {
   margin-bottom: 60px;
+}
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1em;
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    width: 500px;
+  }
 }

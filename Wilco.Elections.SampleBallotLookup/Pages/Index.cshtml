@@ -1,12 +1,31 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Sample Ballot Lookup";
+    ViewData["Title"] = "Sample Ballot Admin";
 }
-<head>
-	<meta charset="utf-8" />
-	<link rel="icon" href="" /> <!-- add link to WilcoTX favicon here-->
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<link rel="stylesheet" href="https://apps.wilco.org/utils/wilcostyle/wilcoStyle.css">
-</head>
-<h1>WilcoTX Sample Ballot Admin</h1>
+<h2>Upload</h2>
+<form method="post" enctype="multipart/form-data">
+<div>
+<label for="electionName">Name of Election: </label>
+<input id="electionName" type="text" id="Election Name">
+</div>
+<div>
+	<label for="voterList">Voter File List</label>
+	<input id="voterList" type="file" name="VoterFileList">
+</div>
+<div>
+	<label for="voterIDBallotmap">Voter id -> Sample Ballot Map</label>
+	<input id="voterIDBallotmap" type="file" name="VoterIDMapFile">
+</div>
+<div>
+<label for="ballotUpload">Ballot Upload</label>
+<input id="ballotUpload" type="file" name="SampleBallotFiles" accept="application/pdf"	multiple>
+</div>
+<br>
+<button class="button button__green" type="submit">Upload</button>
+</form>
+
+@* @if (Model.UploadMessage != null)
+{
+	<p>@Model.UploadMessage</p>
+} *@
