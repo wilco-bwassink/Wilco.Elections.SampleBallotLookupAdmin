@@ -1,31 +1,89 @@
 ﻿@page
-@model IndexModel
+@model Wilco.Elections.SampleBallotLookup.Pages.IndexModel
 @{
-    ViewData["Title"] = "Sample Ballot Admin";
+    ViewData["Title"] = "Admin Panel";
 }
-<h2>Upload</h2>
-<form method="post" enctype="multipart/form-data">
-<div>
-<label for="electionName">Name of Election: </label>
-<input id="electionName" type="text" id="Election Name">
+
+<h2>Admin Panel</h2>
+
+<!-- Election Selector -->
+<form method="get">
+    <div>
+    <label for="SelectedElection">Choose Election:</label>
+    <select name="SelectedElection" onchange="this.form.submit()">
+        <option value="">Create New Election...</option>
+        @foreach (var election in Model.ExistingElections)
+        {
+            if (election == Model.SelectedElection)
+            {
+                <text><option value="@election" selected>@election</option></text>
+            }
+            else
+            {
+                <text><option value="@election">@election</option></text>
+            }
+        }
+    </select>
 </div>
-<div>
-	<label for="voterList">Voter File List</label>
-	<input id="voterList" type="file" name="VoterFileList">
-</div>
-<div>
-	<label for="voterIDBallotmap">Voter id -> Sample Ballot Map</label>
-	<input id="voterIDBallotmap" type="file" name="VoterIDMapFile">
-</div>
-<div>
-<label for="ballotUpload">Ballot Upload</label>
-<input id="ballotUpload" type="file" name="SampleBallotFiles" accept="application/pdf"	multiple>
-</div>
-<br>
-<button class="button button__green" type="submit">Upload</button>
+
+
 </form>
 
-@* @if (Model.UploadMessage != null)
+<!-- Upload Form -->
+<form method="post" enctype="multipart/form-data">
+    <div>
+        <label>Election Name:</label>
+        <input type="text" name="ElectionName" value="@Model.ElectionName" />
+    </div>
+
+    <div>
+        <label>Voter List File:</label>
+        <input type="file" name="VoterListFile" />
+    </div>
+
+    <div>
+        <label>Voter ID → Sample Ballot Mapping:</label>
+        <input type="file" name="VoterIdMapFile" />
+    </div>
+
+    <div>
+        <label>Sample Ballot PDFs:</label>
+        <input type="file" name="UploadedSampleBallotFiles" multiple />
+    </div>
+
+    <button type="submit">Upload</button>
+</form>
+
+@if (Model.UploadMessage != null)
 {
-	<p>@Model.UploadMessage</p>
-} *@
+    <p>@Model.UploadMessage</p>
+}
+
+@if (!string.IsNullOrWhiteSpace(Model.ElectionName))
+{
+    <h3>Files for @Model.ElectionName</h3>
+
+    <h4>Voter List</h4>
+    <ul>
+        @foreach (var file in Model.VoterListFiles)
+        {
+            <li>@file</li>
+        }
+    </ul>
+
+    <h4>Voter ID to Sample Ballot Mapping</h4>
+    <ul>
+        @foreach (var file in Model.VoterIdMapFiles)
+        {
+            <li>@file</li>
+        }
+    </ul>
+
+    <h4>Sample Ballots</h4>
+    <ul>
+        @foreach (var file in Model.SampleBallotFiles)
+        {
+            <li>@file</li>
+        }
+    </ul>
+}
