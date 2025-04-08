@@ -40,3 +40,40 @@ form {
     width: 500px;
   }
 }
+
+.upateButton {
+  background-color: var(--wc-green);
+  color: #fff;
+  padding: 0.5em;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 0.5em;
+
+  &:hover {
+    background-color: var(--wc-green-60);
+  }
+}
+
+.deleteButton {
+  background-color: red;
+  color: #fff;
+  padding: 0.5em;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 0.5em;
+
+  &:hover {
+    background-color: darkred;
+  }
+}
+
+input {
+  padding: 0.5em;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1em;
+}

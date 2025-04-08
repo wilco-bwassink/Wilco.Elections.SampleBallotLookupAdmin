@@ -45,7 +45,7 @@
                     var fileId = "file-" + file.Replace(" ", "-").Replace(".", "").Replace("/", "").Replace("\\", "").Replace(":", "").Replace("\"", "");
                     <li id="@fileId">
                         @file
-                        <button type="button" class="delete-button" data-file="@file">Delete</button>
+                        <button type="button" class="delete-button deleteButton" data-file="@file">Delete</button>
                     </li>
                 }
             </ul>
@@ -63,7 +63,7 @@
                     var fileId = "file-" + file.Replace(" ", "-").Replace(".", "").Replace("/", "").Replace("\\", "").Replace(":", "").Replace("\"", "");
                     <li id="@fileId">
                         @file
-                        <button type="button" class="delete-button" data-file="@file">Delete</button>
+                        <button type="button" class="delete-button deleteButton" data-file="@file">Delete</button>
                     </li>
                 }
             </ul>
@@ -81,11 +81,11 @@
                 var fileId = "file-" + file.Replace(" ", "-").Replace(".", "").Replace("/", "").Replace("\\", "").Replace(":", "").Replace("\"", "");
                 <li id="@fileId">
                     @file
-                    <button type="button" class="delete-button" data-file="@file">Delete</button>
+                    <button type="button" class="delete-button deleteButton" data-file="@file">Delete</button>
                 </li>
             }
         </ul>
-        <button type="button" id="delete-all-sampleballots" style="margin-top:0.5em;">Delete All Sample Ballots</button>
+        <button type="button" class="deleteButton" id="delete-all-sampleballots" style="margin-top:0.5em;">Delete All Sample Ballots</button>
     }
 </div>
 
