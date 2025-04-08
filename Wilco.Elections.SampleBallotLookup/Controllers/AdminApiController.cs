@@ -36,4 +36,26 @@ public class AdminApiController : ControllerBase
 
         return NotFound();
     }
+
+    [HttpPost("delete-all-sampleballots")]
+    public IActionResult DeleteAllSampleBallots([FromForm] string electionName)
+    {
+        Console.WriteLine($"Deleting all sample ballots for election: {electionName}");
+
+        if (string.IsNullOrWhiteSpace(electionName))
+            return BadRequest("Missing election name.");
+
+        var path = Path.Combine(_env.WebRootPath, "uploads", electionName, "sampleballots");
+        if (Directory.Exists(path))
+        {
+            foreach (var file in Directory.GetFiles(path))
+            {
+                System.IO.File.Delete(file);
+            }
+
+            return Ok(new { success = true });
+        }
+
+        return NotFound();
+    }
 }

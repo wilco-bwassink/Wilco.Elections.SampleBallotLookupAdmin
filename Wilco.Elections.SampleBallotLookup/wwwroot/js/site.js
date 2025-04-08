@@ -59,3 +59,39 @@ function hashCode(str) {
   }
   return hash;
 }
+
+const deleteAllButton = document.getElementById("delete-all-sampleballots");
+if (deleteAllButton) {
+  deleteAllButton.addEventListener("click", () => {
+    const electionInput =
+      document.querySelector('input[name="ElectionName"]') ||
+      document.querySelector('input[name="SelectedElection"]');
+    const election = electionInput ? electionInput.value : "";
+
+    if (!election) {
+      alert("Election name is missing.");
+      return;
+    }
+
+    if (!confirm("Are you sure you want to delete all sample ballots?")) return;
+
+    fetch("/api/admin/delete-all-sampleballots", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: `electionName=${encodeURIComponent(election)}`,
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          document.querySelectorAll("[id^='file-']").forEach((el) => {
+            if (el.closest("#sample-ballot-section")) el.remove();
+          });
+        } else {
+          alert("Failed to delete sample ballots.");
+        }
+      })
+      .catch(() => alert("Error deleting sample ballots."));
+  });
+}
