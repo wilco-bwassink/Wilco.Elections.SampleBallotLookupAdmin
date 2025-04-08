@@ -9,28 +9,26 @@
 <!-- Election Selector -->
 <form method="get">
     <div>
-    <label for="SelectedElection">Choose Election:</label>
-    <select name="SelectedElection" onchange="this.form.submit()">
-        <option value="">Create New Election...</option>
-        @foreach (var election in Model.ExistingElections)
-        {
-            if (election == Model.SelectedElection)
+        <label for="SelectedElection">Choose Election:</label>
+        <select name="SelectedElection" onchange="this.form.submit()">
+            <option value="">Create New Election...</option>
+            @foreach (var election in Model.ExistingElections)
             {
-                <text><option value="@election" selected>@election</option></text>
+                if (election == Model.SelectedElection)
+                {
+                    <option value="@election" selected>@election</option>
+                }
+                else
+                {
+                    <option value="@election">@election</option>
+                }
             }
-            else
-            {
-                <text><option value="@election">@election</option></text>
-            }
-        }
-    </select>
-</div>
-
-
+        </select>
+    </div>
 </form>
 
-<!-- Upload Form -->
-<form method="post" enctype="multipart/form-data">
+<!-- Upload / Update Form -->
+<form method="post" enctype="multipart/form-data" asp-page-handler="Upload">
     <div>
         <label>Election Name:</label>
         <input type="text" name="ElectionName" value="@Model.ElectionName" />
@@ -39,51 +37,76 @@
     <div>
         <label>Voter List File:</label>
         <input type="file" name="VoterListFile" />
+        @if (Model.VoterListFiles.Any())
+        {
+            <ul>
+                @foreach (var file in Model.VoterListFiles)
+                {
+                    var fileId = "file-" + file.Replace(" ", "-").Replace(".", "").Replace("/", "").Replace("\\", "").Replace(":", "").Replace("\"", "");
+                    <li id="@fileId">
+                        @file
+                        <button type="button" class="delete-button" data-file="@file">Delete</button>
+                    </li>
+                }
+            </ul>
+        }
     </div>
 
     <div>
         <label>Voter ID → Sample Ballot Mapping:</label>
         <input type="file" name="VoterIdMapFile" />
+        @if (Model.VoterIdMapFiles.Any())
+        {
+            <ul>
+                @foreach (var file in Model.VoterIdMapFiles)
+                {
+                    var fileId = "file-" + file.Replace(" ", "-").Replace(".", "").Replace("/", "").Replace("\\", "").Replace(":", "").Replace("\"", "");
+                    <li id="@fileId">
+                        @file
+                        <button type="button" class="delete-button" data-file="@file">Delete</button>
+                    </li>
+                }
+            </ul>
+        }
     </div>
 
     <div>
         <label>Sample Ballot PDFs:</label>
         <input type="file" name="UploadedSampleBallotFiles" multiple />
+        @if (Model.SampleBallotFiles.Any())
+        {
+            <ul>
+                @foreach (var file in Model.SampleBallotFiles)
+                {
+                    var fileId = "file-" + file.Replace(" ", "-").Replace(".", "").Replace("/", "").Replace("\\", "").Replace(":", "").Replace("\"", "");
+                    <li id="@fileId">
+                        @file
+                        <button type="button" class="delete-button" data-file="@file">Delete</button>
+                    </li>
+                }
+            </ul>
+        }
     </div>
 
-    <button type="submit">Upload</button>
+    <button type="submit">Update</button>
 </form>
+
+<!-- Delete Entire Election -->
+@if (!string.IsNullOrWhiteSpace(Model.SelectedElection))
+{
+    <form method="post" asp-page-handler="DeleteElection">
+        <input type="hidden" name="ElectionName" value="@Model.SelectedElection" />
+        <button type="submit" style="margin-top:1em; background-color:red; color:white;">
+            Delete This Election
+        </button>
+    </form>
+}
 
 @if (Model.UploadMessage != null)
 {
     <p>@Model.UploadMessage</p>
 }
 
-@if (!string.IsNullOrWhiteSpace(Model.ElectionName))
-{
-    <h3>Files for @Model.ElectionName</h3>
-
-    <h4>Voter List</h4>
-    <ul>
-        @foreach (var file in Model.VoterListFiles)
-        {
-            <li>@file</li>
-        }
-    </ul>
-
-    <h4>Voter ID to Sample Ballot Mapping</h4>
-    <ul>
-        @foreach (var file in Model.VoterIdMapFiles)
-        {
-            <li>@file</li>
-        }
-    </ul>
-
-    <h4>Sample Ballots</h4>
-    <ul>
-        @foreach (var file in Model.SampleBallotFiles)
-        {
-            <li>@file</li>
-        }
-    </ul>
+@section Scripts {
+    <script src="/js/site.js"></script>
 }

@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Http;
 using System.IO;
 
 namespace Wilco.Elections.SampleBallotLookup.Pages;
@@ -46,7 +45,7 @@ public class IndexModel : PageModel
         }
     }
 
-    public async Task<IActionResult> OnPostAsync()
+    public async Task<IActionResult> OnPostUploadAsync()
     {
         LoadExistingElections();
 
@@ -58,10 +57,8 @@ public class IndexModel : PageModel
 
         var basePath = Path.Combine(_env.WebRootPath, "uploads");
         var electionFolder = Path.Combine(basePath, ElectionName);
-
         Directory.CreateDirectory(electionFolder);
 
-        // Save Voter List
         if (VoterListFile != null)
         {
             var voterListPath = Path.Combine(electionFolder, "voterlist");
@@ -71,7 +68,6 @@ public class IndexModel : PageModel
             await VoterListFile.CopyToAsync(stream);
         }
 
-        // Save Mapping File
         if (VoterIdMapFile != null)
         {
             var mapPath = Path.Combine(electionFolder, "voteridmap");
@@ -81,7 +77,6 @@ public class IndexModel : PageModel
             await VoterIdMapFile.CopyToAsync(stream);
         }
 
-        // Save Sample Ballots
         if (UploadedSampleBallotFiles != null)
         {
             var ballotsPath = Path.Combine(electionFolder, "sampleballots");
@@ -94,11 +89,63 @@ public class IndexModel : PageModel
             }
         }
 
-        UploadMessage = "Upload successful!";
+        UploadMessage = "Update successful!";
         SelectedElection = ElectionName;
         LoadElectionFiles();
 
         return Page();
+    }
+
+    public IActionResult OnPostDeleteElection()
+    {
+        if (string.IsNullOrWhiteSpace(ElectionName))
+        {
+            UploadMessage = "Invalid election deletion request.";
+            return Page();
+        }
+
+        var path = Path.Combine(_env.WebRootPath, "uploads", ElectionName);
+        if (Directory.Exists(path))
+        {
+            Directory.Delete(path, true);
+            UploadMessage = $"Election '{ElectionName}' deleted.";
+        }
+
+        ElectionName = null;
+        SelectedElection = null;
+        LoadExistingElections();
+        return Page();
+    }
+
+    [IgnoreAntiforgeryToken]
+	public IActionResult OnPostDeleteFileAjax(string electionName, string fileName)
+    {
+        Console.WriteLine("AJAX delete handler hit");
+        Console.WriteLine($"ElectionName (bound): {electionName ?? "null"}");
+        Console.WriteLine($"FileName (bound): {fileName ?? "null"}");
+
+        if (string.IsNullOrWhiteSpace(electionName) || string.IsNullOrWhiteSpace(fileName))
+        {
+            Console.WriteLine("Returning 400 due to missing data.");
+            return BadRequest("Missing data.");
+        }
+
+        var basePath = Path.Combine(_env.WebRootPath, "uploads", electionName);
+        var allSubdirs = new[] { "voterlist", "voteridmap", "sampleballots" };
+
+        foreach (var sub in allSubdirs)
+        {
+            var path = Path.Combine(basePath, sub, fileName);
+            if (System.IO.File.Exists(path))
+            {
+                Console.WriteLine($"Deleting file: {path}");
+                System.IO.File.Delete(path);
+                return new JsonResult(new { success = true });
+            }
+        }
+
+        Console.WriteLine("File not found — returning 404.");
+        return NotFound();
     }
 
     private void LoadExistingElections()
@@ -117,20 +164,18 @@ public class IndexModel : PageModel
         if (string.IsNullOrWhiteSpace(ElectionName)) return;
 
         var electionPath = Path.Combine(_env.WebRootPath, "uploads", ElectionName);
-
         VoterListFiles = ListFilesIn(Path.Combine(electionPath, "voterlist"));
         VoterIdMapFiles = ListFilesIn(Path.Combine(electionPath, "voteridmap"));
         SampleBallotFiles = ListFilesIn(Path.Combine(electionPath, "sampleballots"));
     }
 
     private List<string> ListFilesIn(string folder)
-{
-    if (!Directory.Exists(folder)) return new List<string>();
-    return Directory.GetFiles(folder)
-        .Select(Path.GetFileName)
-        .Where(name => name != null)
-        .Select(name => name!)
-        .ToList();
-}
-
+    {
+        if (!Directory.Exists(folder)) return new List<string>();
+        return Directory.GetFiles(folder)
+            .Select(Path.GetFileName)
+            .Where(name => name != null)
+            .Select(name => name!)
+            .ToList();
+    }
 }
