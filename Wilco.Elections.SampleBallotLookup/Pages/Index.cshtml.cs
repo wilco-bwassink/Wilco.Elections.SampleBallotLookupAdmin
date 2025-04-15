@@ -26,12 +26,16 @@ public class IndexModel : PageModel
     public IFormFile? VoterIdMapFile { get; set; }
 
     [BindProperty]
+    public IFormFile? BallotStyleLinksFile { get; set; }
+
+    [BindProperty]
     public List<IFormFile>? UploadedSampleBallotFiles { get; set; }
 
     public string? UploadMessage { get; set; }
 
     public List<string> VoterListFiles { get; set; } = new();
     public List<string> VoterIdMapFiles { get; set; } = new();
+    public List<string> BallotStyleLinksFiles { get; set; } = new();
     public List<string> SampleBallotFiles { get; set; } = new();
     public List<string> ExistingElections { get; set; } = new();
 
@@ -88,6 +92,16 @@ public class IndexModel : PageModel
                 await file.CopyToAsync(stream);
             }
         }
+
+        if (BallotStyleLinksFile != null)
+{
+    var path = Path.Combine(electionFolder, "ballotstylelinks");
+    Directory.CreateDirectory(path);
+    var filePath = Path.Combine(path, BallotStyleLinksFile.FileName);
+    using var stream = new FileStream(filePath, FileMode.Create);
+    await BallotStyleLinksFile.CopyToAsync(stream);
+}
+
 
         UploadMessage = "Update successful!";
         SelectedElection = ElectionName;
@@ -167,6 +181,8 @@ public class IndexModel : PageModel
         VoterListFiles = ListFilesIn(Path.Combine(electionPath, "voterlist"));
         VoterIdMapFiles = ListFilesIn(Path.Combine(electionPath, "voteridmap"));
         SampleBallotFiles = ListFilesIn(Path.Combine(electionPath, "sampleballots"));
+        BallotStyleLinksFiles = ListFilesIn(Path.Combine(electionPath, "ballotstylelinks"));
+
     }
 
     private List<string> ListFilesIn(string folder)

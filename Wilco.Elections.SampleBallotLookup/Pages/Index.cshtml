@@ -70,6 +70,25 @@
         }
     </div>
 
+    <div>
+    <label>Ballot Style Links:</label>
+    <input type="file" name="BallotStyleLinksFile" />
+    @if (Model.BallotStyleLinksFiles.Any())
+    {
+        <ul>
+            @foreach (var file in Model.BallotStyleLinksFiles)
+            {
+                var fileId = "file-" + file.Replace(" ", "-").Replace(".", "").Replace("/", "").Replace("\\", "").Replace(":", "").Replace("\"", "");
+                <li id="@fileId">
+                    @file
+                    <button type="button" class="delete-button deleteButton" data-file="@file">Delete</button>
+                </li>
+            }
+        </ul>
+    }
+</div>
+
+
     <div id="sample-ballot-section">
     <label>Sample Ballot PDFs:</label>
     <input type="file" name="UploadedSampleBallotFiles" multiple />
