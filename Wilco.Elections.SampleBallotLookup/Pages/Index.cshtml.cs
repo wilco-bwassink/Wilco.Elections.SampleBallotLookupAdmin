@@ -26,6 +26,9 @@ public class IndexModel : PageModel
     public IFormFile? VoterIdMapFile { get; set; }
 
     [BindProperty]
+    public IFormFile? BallotStyleLinksFile { get; set; }
+
+    [BindProperty]
     public List<IFormFile>? UploadedSampleBallotFiles { get; set; }
 
     public string? UploadMessage { get; set; }
@@ -33,6 +36,7 @@ public class IndexModel : PageModel
     public List<string> VoterListFiles { get; set; } = new();
     public List<string> VoterIdMapFiles { get; set; } = new();
     public List<string> SampleBallotFiles { get; set; } = new();
+    public List<string> BallotStyleLinksFiles { get; set; } = new();
     public List<string> ExistingElections { get; set; } = new();
 
     public void OnGet()
@@ -76,6 +80,23 @@ public class IndexModel : PageModel
             using var stream = new FileStream(filePath, FileMode.Create);
             await VoterIdMapFile.CopyToAsync(stream);
         }
+
+        if (BallotStyleLinksFile != null)
+        {
+            var electionDir = Path.Combine(_env.WebRootPath, "data", ElectionName ?? "unknown");
+
+            if (!Directory.Exists(electionDir))
+                {
+                    Directory.CreateDirectory(electionDir);
+                }
+
+            var ballotLinksPath = Path.Combine(electionDir, "BallotStyleLinks.csv"); // or .json depending on file type
+
+            using var stream = new FileStream(ballotLinksPath, FileMode.Create);
+            await BallotStyleLinksFile.CopyToAsync(stream);
+        }
+
+
 
         if (UploadedSampleBallotFiles != null)
         {
@@ -131,7 +152,7 @@ public class IndexModel : PageModel
         }
 
         var basePath = Path.Combine(_env.WebRootPath, "uploads", electionName);
-        var allSubdirs = new[] { "voterlist", "voteridmap", "sampleballots" };
+        var allSubdirs = new[] { "voterlist", "voteridmap", "ballotstylelinks", "sampleballots" };
 
         foreach (var sub in allSubdirs)
         {
@@ -166,6 +187,7 @@ public class IndexModel : PageModel
         var electionPath = Path.Combine(_env.WebRootPath, "uploads", ElectionName);
         VoterListFiles = ListFilesIn(Path.Combine(electionPath, "voterlist"));
         VoterIdMapFiles = ListFilesIn(Path.Combine(electionPath, "voteridmap"));
+        BallotStyleLinksFiles = ListFilesIn(Path.Combine(electionPath, "ballotstylelinks"));
         SampleBallotFiles = ListFilesIn(Path.Combine(electionPath, "sampleballots"));
     }
 
