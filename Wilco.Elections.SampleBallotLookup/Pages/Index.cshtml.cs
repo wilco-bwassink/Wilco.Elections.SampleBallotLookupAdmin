@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Data.SqlClient;
+using System.Data;
 using System.IO;
 
 namespace Wilco.Elections.SampleBallotLookup.Pages;
@@ -7,10 +9,12 @@ namespace Wilco.Elections.SampleBallotLookup.Pages;
 public class IndexModel : PageModel
 {
     private readonly IWebHostEnvironment _env;
+    private readonly IConfiguration _config;
 
-    public IndexModel(IWebHostEnvironment env)
+    public IndexModel(IWebHostEnvironment env, IConfiguration config)
     {
         _env = env;
+        _config = config;
     }
 
     [BindProperty(SupportsGet = true)]
@@ -38,6 +42,8 @@ public class IndexModel : PageModel
     public List<string> SampleBallotFiles { get; set; } = new();
     public List<string> BallotStyleLinksFiles { get; set; } = new();
     public List<string> ExistingElections { get; set; } = new();
+
+    private readonly string connectionString = "Server=WILCOSQL1;Database=Public_Web;User ID=elections;Password='j$hegiqOjiwl1adisU0E';Encrypt=true;TrustServerCertificate=true;";
 
     public void OnGet()
     {
@@ -68,8 +74,28 @@ public class IndexModel : PageModel
             var voterListPath = Path.Combine(electionFolder, "voterlist");
             Directory.CreateDirectory(voterListPath);
             var filePath = Path.Combine(voterListPath, VoterListFile.FileName);
-            using var stream = new FileStream(filePath, FileMode.Create);
-            await VoterListFile.CopyToAsync(stream);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await VoterListFile.CopyToAsync(stream);
+            }
+
+            try
+            {
+                using var connection = new SqlConnection(connectionString);
+                connection.Open();
+                using var command = connection.CreateCommand();
+                command.CommandType = CommandType.StoredProcedure;
+                command.CommandText = "Elections.ImportVoterList";
+                command.Parameters.AddWithValue("@VoterListFile", VoterListFile.FileName);
+                command.Parameters.AddWithValue("@ElectionId", ElectionName);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                UploadMessage = $"Voter List upload succeeded, but SQL import failed: {ex.Message}";
+                return Page();
+            }
         }
 
         if (VoterIdMapFile != null)
@@ -77,26 +103,58 @@ public class IndexModel : PageModel
             var mapPath = Path.Combine(electionFolder, "voteridmap");
             Directory.CreateDirectory(mapPath);
             var filePath = Path.Combine(mapPath, VoterIdMapFile.FileName);
-            using var stream = new FileStream(filePath, FileMode.Create);
-            await VoterIdMapFile.CopyToAsync(stream);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await VoterIdMapFile.CopyToAsync(stream);
+            }
+
+            try
+            {
+                using var connection = new SqlConnection(connectionString);
+                connection.Open();
+                using var command = connection.CreateCommand();
+                command.CommandType = CommandType.StoredProcedure;
+                command.CommandText = "Elections.ImportBallotStyles";
+                command.Parameters.AddWithValue("@BallotStyleFile", VoterIdMapFile.FileName);
+                command.Parameters.AddWithValue("@ElectionId", ElectionName);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                UploadMessage = $"Ballot Styles upload succeeded, but SQL import failed: {ex.Message}";
+                return Page();
+            }
         }
 
         if (BallotStyleLinksFile != null)
         {
             var electionDir = Path.Combine(_env.WebRootPath, "data", ElectionName ?? "unknown");
+            Directory.CreateDirectory(electionDir);
 
-            if (!Directory.Exists(electionDir))
-                {
-                    Directory.CreateDirectory(electionDir);
-                }
+            var ballotLinksPath = Path.Combine(electionDir, "BallotStyleLinks.csv");
+            using (var stream = new FileStream(ballotLinksPath, FileMode.Create))
+            {
+                await BallotStyleLinksFile.CopyToAsync(stream);
+            }
 
-            var ballotLinksPath = Path.Combine(electionDir, "BallotStyleLinks.csv"); // or .json depending on file type
-
-            using var stream = new FileStream(ballotLinksPath, FileMode.Create);
-            await BallotStyleLinksFile.CopyToAsync(stream);
+            try
+            {
+                using var connection = new SqlConnection(connectionString);
+                connection.Open();
+                using var command = connection.CreateCommand();
+                command.CommandType = CommandType.StoredProcedure;
+                command.CommandText = "Elections.ImportBallotStyleLinks";
+                command.Parameters.AddWithValue("@BallotStyleFile", "BallotStyleLinks.csv");
+                command.Parameters.AddWithValue("@ElectionId", ElectionName);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                UploadMessage = $"Ballot Style Links upload succeeded, but SQL import failed: {ex.Message}";
+                return Page();
+            }
         }
-
-
 
         if (UploadedSampleBallotFiles != null)
         {
@@ -139,7 +197,7 @@ public class IndexModel : PageModel
     }
 
     [IgnoreAntiforgeryToken]
-	public IActionResult OnPostDeleteFileAjax(string electionName, string fileName)
+    public IActionResult OnPostDeleteFileAjax(string electionName, string fileName)
     {
         Console.WriteLine("AJAX delete handler hit");
         Console.WriteLine($"ElectionName (bound): {electionName ?? "null"}");
