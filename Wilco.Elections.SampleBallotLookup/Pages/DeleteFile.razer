@@ -1,0 +1,6 @@
+@page "/api/admin/delete-file"
+@model DeleteFileRazorPageApp.Pages.Api.Admin.DeleteFileModel
+@{
+    Layout = null;
+}
+<h2>Razor page loaded!</h2>

@@ -4,37 +4,38 @@ using Microsoft.AspNetCore.Mvc;
 [Route("api/admin")]
 public class AdminApiController : ControllerBase
 {
+    private readonly IConfiguration _config;
     private readonly IWebHostEnvironment _env;
 
-    public AdminApiController(IWebHostEnvironment env)
+    public AdminApiController(IConfiguration config, IWebHostEnvironment env)
     {
+        _config = config;
         _env = env;
     }
 
     [HttpPost("delete-file")]
     public IActionResult DeleteFile([FromForm] string electionName, [FromForm] string fileName)
     {
-        Console.WriteLine("MiniAPI delete endpoint hit.");
-        Console.WriteLine($"ElectionName: {electionName}");
-        Console.WriteLine($"FileName: {fileName}");
-
         if (string.IsNullOrWhiteSpace(electionName) || string.IsNullOrWhiteSpace(fileName))
-            return BadRequest("Missing data.");
+            return BadRequest(new { success = false, error = "Missing parameters." });
 
-        var basePath = Path.Combine(_env.WebRootPath, "uploads", electionName);
-        var allSubdirs = new[] { "voterlist", "voteridmap", "sampleballots" };
+        var baseUploadPath = _config["ElectionUploadSettings:BasePath"]
+                             ?? Path.Combine(_env.WebRootPath, "uploads");
 
-        foreach (var sub in allSubdirs)
+        var electionPath = Path.Combine(baseUploadPath, electionName);
+        var subdirs = new[] { "voterlist", "voteridmap", "ballotstylelinks", "sampleballots" };
+
+        foreach (var sub in subdirs)
         {
-            var path = Path.Combine(basePath, sub, fileName);
-            if (System.IO.File.Exists(path))
+            var filePath = Path.Combine(electionPath, sub, fileName);
+            if (System.IO.File.Exists(filePath))
             {
-                System.IO.File.Delete(path);
-                return Ok(new { success = true });
+                System.IO.File.Delete(filePath);
+                return Ok(new { success = true, deleted = filePath });
             }
         }
 
-        return NotFound();
+        return NotFound(new { success = false, error = "File not found." });
     }
 
     [HttpPost("delete-all-sampleballots")]
@@ -45,7 +46,10 @@ public class AdminApiController : ControllerBase
         if (string.IsNullOrWhiteSpace(electionName))
             return BadRequest("Missing election name.");
 
-        var path = Path.Combine(_env.WebRootPath, "uploads", electionName, "sampleballots");
+        var baseUploadPath = _config["ElectionUploadSettings:BasePath"]
+                             ?? Path.Combine(_env.WebRootPath, "uploads");
+
+        var path = Path.Combine(baseUploadPath, electionName, "sampleballots");
         if (Directory.Exists(path))
         {
             foreach (var file in Directory.GetFiles(path))
@@ -56,6 +60,6 @@ public class AdminApiController : ControllerBase
             return Ok(new { success = true });
         }
 
-        return NotFound();
+        return NotFound(new { success = false, error = "Directory not found." });
     }
 }

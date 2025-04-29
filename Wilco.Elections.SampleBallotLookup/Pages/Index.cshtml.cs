@@ -161,7 +161,7 @@ public IndexModel(IConfiguration config, IWebHostEnvironment env, ILogger<IndexM
                 connection.Open();
                 using var command = connection.CreateCommand();
                 command.CommandType = CommandType.StoredProcedure;
-                command.CommandText = "Elections.ImportBallotStyleLinks";
+                command.CommandText = "Elections.ImportBallotStyles";
                 command.Parameters.AddWithValue("@BallotStyleFile", filePath);
                 command.Parameters.AddWithValue("@ElectionId", ElectionName);
                 command.ExecuteNonQuery();
@@ -231,13 +231,16 @@ public IndexModel(IConfiguration config, IWebHostEnvironment env, ILogger<IndexM
     }
 
     [IgnoreAntiforgeryToken]
-    public IActionResult OnPostDeleteFileAjax(string electionName, string fileName)
+    public IActionResult OnPost()
     {
-        if (string.IsNullOrWhiteSpace(electionName) || string.IsNullOrWhiteSpace(fileName))
+        var electionName = Request.Form["electionName"].ToString();
+        var fileName = Request.Form["fileName"].ToString();
+
+       if (string.IsNullOrWhiteSpace(electionName) || string.IsNullOrWhiteSpace(fileName))
             return BadRequest("Missing data.");
 
         var basePath = Path.Combine(BaseUploadPath, electionName);
-        var allSubdirs = new[] { "voterlist", "voteridmap", "ballotstylelinks", "sampleballots" };
+     var allSubdirs = new[] { "voterlist", "voteridmap", "ballotstylelinks", "sampleballots" };
 
         foreach (var sub in allSubdirs)
         {
@@ -249,8 +252,9 @@ public IndexModel(IConfiguration config, IWebHostEnvironment env, ILogger<IndexM
             }
         }
 
-        return NotFound();
-    }
+    return NotFound();
+}
+
 
     private void LoadExistingElections()
     {
