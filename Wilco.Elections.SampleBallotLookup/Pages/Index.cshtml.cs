@@ -10,25 +10,20 @@ public class IndexModel : PageModel
 {
     private readonly IConfiguration _config;
     private readonly IWebHostEnvironment _env;
-
-    // public IndexModel(IConfiguration config, IWebHostEnvironment env)
-    // {
-    //     _config = config;
-    //     _env = env;
-    // }
-
     private readonly ILogger<IndexModel> _logger;
+    private readonly string _connectionString;
+    private readonly string BaseUploadPath;
 
-public IndexModel(IConfiguration config, IWebHostEnvironment env, ILogger<IndexModel> logger)
-{
-    _config = config;
-    _env = env;
-    _logger = logger;
-}
+    public IndexModel(IConfiguration config, IWebHostEnvironment env, ILogger<IndexModel> logger)
+    {
+        _config = config;
+        _env = env;
+        _logger = logger;
+        _connectionString = _config.GetConnectionString("ElectionsDb");
+        BaseUploadPath = _config["ElectionUploadSettings:BasePath"]
+                         ?? @"\\wilcosql1\elections";
+    }
 
-
-    private readonly string connectionString = "Server=WILCOSQL1;Database=Public_Web;User ID=elections;Password='j$hegiqOjiwl1adisU0E';Encrypt=true;TrustServerCertificate=true;";
-    private readonly string BaseUploadPath = "\\\\wilcosql2\\imports\\Elections\\uploads";
     private string StatusFilePath => Path.Combine(_env.WebRootPath, "data", "electionStatus.json");
 
     [BindProperty(SupportsGet = true)] public string? SelectedElection { get; set; }
@@ -38,6 +33,7 @@ public IndexModel(IConfiguration config, IWebHostEnvironment env, ILogger<IndexM
     [BindProperty] public IFormFile? BallotStyleLinksFile { get; set; }
     [BindProperty] public List<IFormFile>? UploadedSampleBallotFiles { get; set; }
     [BindProperty] public bool IsActive { get; set; }
+    [BindProperty] public string? Announcement { get; set; }
 
     public string? UploadMessage { get; set; }
     public List<string> VoterListFiles { get; set; } = new();
@@ -46,7 +42,8 @@ public IndexModel(IConfiguration config, IWebHostEnvironment env, ILogger<IndexM
     public List<string> BallotStyleLinksFiles { get; set; } = new();
     public List<string> ExistingElections { get; set; } = new();
 
-    public class ElectionStatusEntry { public bool IsActive { get; set; } }
+    public class ElectionStatusEntry { public bool IsActive { get; set; } public string? Announcement { get; set; }
+ }
     public class ElectionStatusMap : Dictionary<string, ElectionStatusEntry> { }
 
     private ElectionStatusMap LoadElectionStatus()
@@ -63,17 +60,24 @@ public IndexModel(IConfiguration config, IWebHostEnvironment env, ILogger<IndexM
     }
 
     public void OnGet()
-    {
-        LoadExistingElections();
-        if (!string.IsNullOrWhiteSpace(SelectedElection))
-        {
-            ElectionName = SelectedElection;
-            LoadElectionFiles();
+{
+    LoadExistingElections();
 
-            var statusMap = LoadElectionStatus();
-            IsActive = statusMap.TryGetValue(ElectionName!, out var entry) && entry.IsActive;
+    if (!string.IsNullOrWhiteSpace(SelectedElection))
+    {
+        ElectionName = SelectedElection;
+        LoadElectionFiles();
+
+        var statusMap = LoadElectionStatus(); // ✅ THIS LINE IS REQUIRED
+
+        if (statusMap.TryGetValue(ElectionName!, out var entry))
+        {
+            IsActive = entry.IsActive;
+            Announcement = entry.Announcement;
         }
     }
+}
+
 
     public async Task<IActionResult> OnPostUploadAsync()
     {
@@ -107,7 +111,7 @@ public IndexModel(IConfiguration config, IWebHostEnvironment env, ILogger<IndexM
             await VoterListFile.CopyToAsync(stream);
             try
             {
-                using var connection = new SqlConnection(connectionString);
+                using var connection = new SqlConnection(_connectionString);
                 connection.Open();
                 using var command = connection.CreateCommand();
                 command.CommandType = CommandType.StoredProcedure;
@@ -132,7 +136,7 @@ public IndexModel(IConfiguration config, IWebHostEnvironment env, ILogger<IndexM
             await VoterIdMapFile.CopyToAsync(stream);
             try
             {
-                using var connection = new SqlConnection(connectionString);
+                using var connection = new SqlConnection(_connectionString);
                 connection.Open();
                 using var command = connection.CreateCommand();
                 command.CommandType = CommandType.StoredProcedure;
@@ -157,7 +161,7 @@ public IndexModel(IConfiguration config, IWebHostEnvironment env, ILogger<IndexM
             await BallotStyleLinksFile.CopyToAsync(stream);
             try
             {
-                using var connection = new SqlConnection(connectionString);
+                using var connection = new SqlConnection(_connectionString);
                 connection.Open();
                 using var command = connection.CreateCommand();
                 command.CommandType = CommandType.StoredProcedure;
@@ -193,13 +197,19 @@ public IndexModel(IConfiguration config, IWebHostEnvironment env, ILogger<IndexM
         //Windsurf addition
         var statusMap = LoadElectionStatus();
             if (statusMap.TryGetValue(ElectionName!, out var entry))
-            {
-                entry.IsActive = IsActive;
-            }
-            else
-            {
-               statusMap[ElectionName!] = new ElectionStatusEntry { IsActive = IsActive };
-            }
+{
+    entry.IsActive = IsActive;
+    entry.Announcement = Announcement;
+}
+else
+{
+    statusMap[ElectionName!] = new ElectionStatusEntry
+    {
+        IsActive = IsActive,
+        Announcement = Announcement
+    };
+}
+
     SaveElectionStatus(statusMap);
         // end Windsurf addition
 

@@ -362,3 +362,5 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 Wilco.Elections.SampleBallotLookup/wwwroot/uploads/
+
+Wilco.Elections.SampleBallotLookup/appsettings.Development.json
