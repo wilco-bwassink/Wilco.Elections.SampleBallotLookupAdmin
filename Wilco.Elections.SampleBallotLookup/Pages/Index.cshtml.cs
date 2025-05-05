@@ -42,8 +42,12 @@ public class IndexModel : PageModel
     public List<string> BallotStyleLinksFiles { get; set; } = new();
     public List<string> ExistingElections { get; set; } = new();
 
-    public class ElectionStatusEntry { public bool IsActive { get; set; } public string? Announcement { get; set; }
- }
+    public class ElectionStatusEntry
+    {
+        public bool IsActive { get; set; }
+        public string? Announcement { get; set; }
+    }
+
     public class ElectionStatusMap : Dictionary<string, ElectionStatusEntry> { }
 
     private ElectionStatusMap LoadElectionStatus()
@@ -60,24 +64,22 @@ public class IndexModel : PageModel
     }
 
     public void OnGet()
-{
-    LoadExistingElections();
-
-    if (!string.IsNullOrWhiteSpace(SelectedElection))
     {
-        ElectionName = SelectedElection;
-        LoadElectionFiles();
+        LoadExistingElections();
 
-        var statusMap = LoadElectionStatus(); // ✅ THIS LINE IS REQUIRED
-
-        if (statusMap.TryGetValue(ElectionName!, out var entry))
+        if (!string.IsNullOrWhiteSpace(SelectedElection))
         {
-            IsActive = entry.IsActive;
-            Announcement = entry.Announcement;
+            ElectionName = SelectedElection;
+            LoadElectionFiles();
+
+            var statusMap = LoadElectionStatus();
+            if (statusMap.TryGetValue(ElectionName!, out var entry))
+            {
+                IsActive = entry.IsActive;
+                Announcement = entry.Announcement;
+            }
         }
     }
-}
-
 
     public async Task<IActionResult> OnPostUploadAsync()
     {
@@ -89,9 +91,6 @@ public class IndexModel : PageModel
             IsActive = isActiveVal.Contains("true", StringComparer.OrdinalIgnoreCase);
             _logger.LogInformation("[DEBUG] Manually parsed IsActive: {IsActive}", IsActive);
         }
-        // Manually parse IsActive because Razor posts both false (hidden) and true (checkbox),
-        // and model binding only takes the first value.
-
 
         if (string.IsNullOrWhiteSpace(ElectionName))
         {
@@ -109,6 +108,7 @@ public class IndexModel : PageModel
             var filePath = Path.Combine(voterListPath, VoterListFile.FileName);
             using var stream = new FileStream(filePath, FileMode.Create);
             await VoterListFile.CopyToAsync(stream);
+
             try
             {
                 using var connection = new SqlConnection(_connectionString);
@@ -132,8 +132,12 @@ public class IndexModel : PageModel
             var mapPath = Path.Combine(electionFolder, "voteridmap");
             Directory.CreateDirectory(mapPath);
             var filePath = Path.Combine(mapPath, VoterIdMapFile.FileName);
-            using var stream = new FileStream(filePath, FileMode.Create);
-            await VoterIdMapFile.CopyToAsync(stream);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await VoterIdMapFile.CopyToAsync(stream);
+            }
+
             try
             {
                 using var connection = new SqlConnection(_connectionString);
@@ -141,7 +145,8 @@ public class IndexModel : PageModel
                 using var command = connection.CreateCommand();
                 command.CommandType = CommandType.StoredProcedure;
                 command.CommandText = "Elections.ImportBallotStyles";
-                command.Parameters.AddWithValue("@BallotStyleFile", filePath);
+                var dbPath = filePath.Replace(BaseUploadPath + Path.DirectorySeparatorChar, "");
+command.Parameters.AddWithValue("@BallotStyleFile", dbPath);
                 command.Parameters.AddWithValue("@ElectionId", ElectionName);
                 command.ExecuteNonQuery();
             }
@@ -157,8 +162,14 @@ public class IndexModel : PageModel
             var linksPath = Path.Combine(electionFolder, "ballotstylelinks");
             Directory.CreateDirectory(linksPath);
             var filePath = Path.Combine(linksPath, BallotStyleLinksFile.FileName);
-            using var stream = new FileStream(filePath, FileMode.Create);
-            await BallotStyleLinksFile.CopyToAsync(stream);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await BallotStyleLinksFile.CopyToAsync(stream);
+            }
+
+            var dbPath = filePath.Replace(BaseUploadPath + Path.DirectorySeparatorChar, "");
+
             try
             {
                 using var connection = new SqlConnection(_connectionString);
@@ -166,7 +177,7 @@ public class IndexModel : PageModel
                 using var command = connection.CreateCommand();
                 command.CommandType = CommandType.StoredProcedure;
                 command.CommandText = "Elections.ImportBallotStyles";
-                command.Parameters.AddWithValue("@BallotStyleFile", filePath);
+                command.Parameters.AddWithValue("@BallotStyleFile", dbPath);
                 command.Parameters.AddWithValue("@ElectionId", ElectionName);
                 command.ExecuteNonQuery();
             }
@@ -189,30 +200,22 @@ public class IndexModel : PageModel
             }
         }
 
-        // Save IsActive to status map
-        // var statusMap = LoadElectionStatus();
-        // statusMap[ElectionName] = new ElectionStatusEntry { IsActive = IsActive };
-        // SaveElectionStatus(statusMap);
-
-        //Windsurf addition
         var statusMap = LoadElectionStatus();
-            if (statusMap.TryGetValue(ElectionName!, out var entry))
-{
-    entry.IsActive = IsActive;
-    entry.Announcement = Announcement;
-}
-else
-{
-    statusMap[ElectionName!] = new ElectionStatusEntry
-    {
-        IsActive = IsActive,
-        Announcement = Announcement
-    };
-}
+        if (statusMap.TryGetValue(ElectionName!, out var entry))
+        {
+            entry.IsActive = IsActive;
+            entry.Announcement = Announcement;
+        }
+        else
+        {
+            statusMap[ElectionName!] = new ElectionStatusEntry
+            {
+                IsActive = IsActive,
+                Announcement = Announcement
+            };
+        }
 
-    SaveElectionStatus(statusMap);
-        // end Windsurf addition
-
+        SaveElectionStatus(statusMap);
         UploadMessage = "Update successful!";
         SelectedElection = ElectionName;
         LoadElectionFiles();
@@ -246,11 +249,11 @@ else
         var electionName = Request.Form["electionName"].ToString();
         var fileName = Request.Form["fileName"].ToString();
 
-       if (string.IsNullOrWhiteSpace(electionName) || string.IsNullOrWhiteSpace(fileName))
+        if (string.IsNullOrWhiteSpace(electionName) || string.IsNullOrWhiteSpace(fileName))
             return BadRequest("Missing data.");
 
         var basePath = Path.Combine(BaseUploadPath, electionName);
-     var allSubdirs = new[] { "voterlist", "voteridmap", "ballotstylelinks", "sampleballots" };
+        var allSubdirs = new[] { "voterlist", "voteridmap", "ballotstylelinks", "sampleballots" };
 
         foreach (var sub in allSubdirs)
         {
@@ -262,9 +265,8 @@ else
             }
         }
 
-    return NotFound();
-}
-
+        return NotFound();
+    }
 
     private void LoadExistingElections()
     {
