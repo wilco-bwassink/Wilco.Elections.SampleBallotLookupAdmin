@@ -116,7 +116,8 @@ public class IndexModel : PageModel
                 using var command = connection.CreateCommand();
                 command.CommandType = CommandType.StoredProcedure;
                 command.CommandText = "Elections.ImportVoterList";
-                command.Parameters.AddWithValue("@VoterListFile", filePath);
+                var dbPath = filePath.Replace(BaseUploadPath + Path.DirectorySeparatorChar, "");
+                command.Parameters.AddWithValue("@VoterListFile", dbPath);
                 command.Parameters.AddWithValue("@ElectionId", ElectionName);
                 command.ExecuteNonQuery();
             }
@@ -146,7 +147,7 @@ public class IndexModel : PageModel
                 command.CommandType = CommandType.StoredProcedure;
                 command.CommandText = "Elections.ImportBallotStyles";
                 var dbPath = filePath.Replace(BaseUploadPath + Path.DirectorySeparatorChar, "");
-command.Parameters.AddWithValue("@BallotStyleFile", dbPath);
+                command.Parameters.AddWithValue("@BallotStyleFile", dbPath);
                 command.Parameters.AddWithValue("@ElectionId", ElectionName);
                 command.ExecuteNonQuery();
             }
@@ -176,7 +177,7 @@ command.Parameters.AddWithValue("@BallotStyleFile", dbPath);
                 connection.Open();
                 using var command = connection.CreateCommand();
                 command.CommandType = CommandType.StoredProcedure;
-                command.CommandText = "Elections.ImportBallotStyles";
+                command.CommandText = "Elections.ImportBallotStyleLinks";
                 command.Parameters.AddWithValue("@BallotStyleFile", dbPath);
                 command.Parameters.AddWithValue("@ElectionId", ElectionName);
                 command.ExecuteNonQuery();
