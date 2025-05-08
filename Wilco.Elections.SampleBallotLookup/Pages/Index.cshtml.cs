@@ -24,7 +24,7 @@ public class IndexModel : PageModel
                          ?? @"\\wilcosql1\elections";
     }
 
-    private string StatusFilePath => Path.Combine(_env.WebRootPath, "data", "electionStatus.json");
+    private string StatusFilePath => Path.Combine(BaseUploadPath, "electionStatus.json");
 
     [BindProperty(SupportsGet = true)] public string? SelectedElection { get; set; }
     [BindProperty] public string? ElectionName { get; set; }
@@ -178,7 +178,7 @@ public class IndexModel : PageModel
                 using var command = connection.CreateCommand();
                 command.CommandType = CommandType.StoredProcedure;
                 command.CommandText = "Elections.ImportBallotStyleLinks";
-                command.Parameters.AddWithValue("@BallotStyleFile", dbPath);
+                command.Parameters.AddWithValue("@BallotStyleLinksFile", dbPath);
                 command.Parameters.AddWithValue("@ElectionId", ElectionName);
                 command.ExecuteNonQuery();
             }
