@@ -6,17 +6,28 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Tell app it's hosted under /sampleBallotAdmin
+// app.UsePathBase("/sampleBallotAdmin");
+
+const string pathBase = "/sampleBallotAdmin";
+app.UsePathBase(pathBase);          // <─ sets HttpRequest.PathBase
+app.Use((ctx, next) =>              // optional: redirect naked requests
+{
+    if (ctx.Request.Path == "/")
+        return Task.Run(() =>
+            ctx.Response.Redirect(pathBase + "/"));
+    return next();
+});
+
+// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 }
-
-
-if (!app.Environment.IsDevelopment())
+else
 {
-	app.UseExceptionHandler("/Error");
-	app.UseHsts();
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
 }
 
 app.UseHttpsRedirection();
@@ -25,14 +36,11 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
-app.UseDeveloperExceptionPage();
 
 app.UseEndpoints(endpoints =>
 {
-	endpoints.MapControllers(); // Optional — for attribute-routed API controllers
-	endpoints.MapRazorPages();  // ✅ This is what enables Razor Pages like your delete-file page
+    endpoints.MapControllers();     // for /api/xyz routes
+    endpoints.MapRazorPages();      // for .cshtml Razor Pages
 });
 
-app.Run(); // ✅ This should be last
-
-
+app.Run();

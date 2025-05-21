@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
         )}&fileName=${encodeURIComponent(fileName)}`
       );
 
-      fetch("/api/admin/delete-file", {
+      fetch("api/admin/delete-fil", {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!confirm("Are you sure you want to delete all sample ballots?"))
         return;
 
-      fetch("/api/admin/delete-all-sampleballots", {
+      fetch("api/admin/delete-all-sampleballots", {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
