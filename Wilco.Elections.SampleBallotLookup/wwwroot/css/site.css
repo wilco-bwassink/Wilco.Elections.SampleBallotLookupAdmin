@@ -41,7 +41,7 @@ form {
   }
 }
 
-.upateButton {
+.updateButton {
   background-color: var(--wc-green);
   color: #fff;
   padding: 0.5em;

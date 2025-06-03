@@ -34,6 +34,12 @@
         <input type="text" name="ElectionName" value="@Model.ElectionName" />
     </div>
 
+    <div>
+    <label for="announcementField">Announcement:</label>
+    <textarea id="announcementField" asp-for="Announcement"></textarea>
+    </div>
+
+
     <div class="form-group">
         <label for="isActiveSwitch">Active:</label>
         <label class="switch">
@@ -118,7 +124,7 @@
 </div>
 
 
-    <button type="submit">Update</button>
+    <button class="updateButton" type="submit">Update</button>
 </form>
 
 <!-- Delete Entire Election -->
@@ -135,14 +141,4 @@
 @if (Model.UploadMessage != null)
 {
     <p>@Model.UploadMessage</p>
-}
-
-@* @if (ModelState.IsValid)
-{
-    <p><strong>DEBUG:</strong> IsActive = @Model.IsActive.ToString().ToLower()</p>
-} *@
-
-
-@section Scripts {
-    <script src="/js/site.js"></script>
 }

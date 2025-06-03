@@ -10,26 +10,21 @@ public class IndexModel : PageModel
 {
     private readonly IConfiguration _config;
     private readonly IWebHostEnvironment _env;
-
-    // public IndexModel(IConfiguration config, IWebHostEnvironment env)
-    // {
-    //     _config = config;
-    //     _env = env;
-    // }
-
     private readonly ILogger<IndexModel> _logger;
+    private readonly string _connectionString;
+    private readonly string BaseUploadPath;
 
-public IndexModel(IConfiguration config, IWebHostEnvironment env, ILogger<IndexModel> logger)
-{
-    _config = config;
-    _env = env;
-    _logger = logger;
-}
+    public IndexModel(IConfiguration config, IWebHostEnvironment env, ILogger<IndexModel> logger)
+    {
+        _config = config;
+        _env = env;
+        _logger = logger;
+        _connectionString = _config.GetConnectionString("ElectionsDb");
+        BaseUploadPath = _config["ElectionUploadSettings:BasePath"]
+                         ?? @"\\wilcosql1\elections";
+    }
 
-
-    private readonly string connectionString = "Server=WILCOSQL1;Database=Public_Web;User ID=elections;Password='j$hegiqOjiwl1adisU0E';Encrypt=true;TrustServerCertificate=true;";
-    private readonly string BaseUploadPath = "\\\\wilcosql2\\imports\\Elections\\uploads";
-    private string StatusFilePath => Path.Combine(_env.WebRootPath, "data", "electionStatus.json");
+    private string StatusFilePath => Path.Combine(BaseUploadPath, "electionStatus.json");
 
     [BindProperty(SupportsGet = true)] public string? SelectedElection { get; set; }
     [BindProperty] public string? ElectionName { get; set; }
@@ -38,6 +33,7 @@ public IndexModel(IConfiguration config, IWebHostEnvironment env, ILogger<IndexM
     [BindProperty] public IFormFile? BallotStyleLinksFile { get; set; }
     [BindProperty] public List<IFormFile>? UploadedSampleBallotFiles { get; set; }
     [BindProperty] public bool IsActive { get; set; }
+    [BindProperty] public string? Announcement { get; set; }
 
     public string? UploadMessage { get; set; }
     public List<string> VoterListFiles { get; set; } = new();
@@ -46,7 +42,12 @@ public IndexModel(IConfiguration config, IWebHostEnvironment env, ILogger<IndexM
     public List<string> BallotStyleLinksFiles { get; set; } = new();
     public List<string> ExistingElections { get; set; } = new();
 
-    public class ElectionStatusEntry { public bool IsActive { get; set; } }
+    public class ElectionStatusEntry
+    {
+        public bool IsActive { get; set; }
+        public string? Announcement { get; set; }
+    }
+
     public class ElectionStatusMap : Dictionary<string, ElectionStatusEntry> { }
 
     private ElectionStatusMap LoadElectionStatus()
@@ -65,13 +66,18 @@ public IndexModel(IConfiguration config, IWebHostEnvironment env, ILogger<IndexM
     public void OnGet()
     {
         LoadExistingElections();
+
         if (!string.IsNullOrWhiteSpace(SelectedElection))
         {
             ElectionName = SelectedElection;
             LoadElectionFiles();
 
             var statusMap = LoadElectionStatus();
-            IsActive = statusMap.TryGetValue(ElectionName!, out var entry) && entry.IsActive;
+            if (statusMap.TryGetValue(ElectionName!, out var entry))
+            {
+                IsActive = entry.IsActive;
+                Announcement = entry.Announcement;
+            }
         }
     }
 
@@ -85,9 +91,6 @@ public IndexModel(IConfiguration config, IWebHostEnvironment env, ILogger<IndexM
             IsActive = isActiveVal.Contains("true", StringComparer.OrdinalIgnoreCase);
             _logger.LogInformation("[DEBUG] Manually parsed IsActive: {IsActive}", IsActive);
         }
-        // Manually parse IsActive because Razor posts both false (hidden) and true (checkbox),
-        // and model binding only takes the first value.
-
 
         if (string.IsNullOrWhiteSpace(ElectionName))
         {
@@ -105,14 +108,16 @@ public IndexModel(IConfiguration config, IWebHostEnvironment env, ILogger<IndexM
             var filePath = Path.Combine(voterListPath, VoterListFile.FileName);
             using var stream = new FileStream(filePath, FileMode.Create);
             await VoterListFile.CopyToAsync(stream);
+
             try
             {
-                using var connection = new SqlConnection(connectionString);
+                using var connection = new SqlConnection(_connectionString);
                 connection.Open();
                 using var command = connection.CreateCommand();
                 command.CommandType = CommandType.StoredProcedure;
                 command.CommandText = "Elections.ImportVoterList";
-                command.Parameters.AddWithValue("@VoterListFile", filePath);
+                var dbPath = filePath.Replace(BaseUploadPath + Path.DirectorySeparatorChar, "");
+                command.Parameters.AddWithValue("@VoterListFile", dbPath);
                 command.Parameters.AddWithValue("@ElectionId", ElectionName);
                 command.ExecuteNonQuery();
             }
@@ -128,16 +133,21 @@ public IndexModel(IConfiguration config, IWebHostEnvironment env, ILogger<IndexM
             var mapPath = Path.Combine(electionFolder, "voteridmap");
             Directory.CreateDirectory(mapPath);
             var filePath = Path.Combine(mapPath, VoterIdMapFile.FileName);
-            using var stream = new FileStream(filePath, FileMode.Create);
-            await VoterIdMapFile.CopyToAsync(stream);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await VoterIdMapFile.CopyToAsync(stream);
+            }
+
             try
             {
-                using var connection = new SqlConnection(connectionString);
+                using var connection = new SqlConnection(_connectionString);
                 connection.Open();
                 using var command = connection.CreateCommand();
                 command.CommandType = CommandType.StoredProcedure;
                 command.CommandText = "Elections.ImportBallotStyles";
-                command.Parameters.AddWithValue("@BallotStyleFile", filePath);
+                var dbPath = filePath.Replace(BaseUploadPath + Path.DirectorySeparatorChar, "");
+                command.Parameters.AddWithValue("@BallotStyleFile", dbPath);
                 command.Parameters.AddWithValue("@ElectionId", ElectionName);
                 command.ExecuteNonQuery();
             }
@@ -153,16 +163,22 @@ public IndexModel(IConfiguration config, IWebHostEnvironment env, ILogger<IndexM
             var linksPath = Path.Combine(electionFolder, "ballotstylelinks");
             Directory.CreateDirectory(linksPath);
             var filePath = Path.Combine(linksPath, BallotStyleLinksFile.FileName);
-            using var stream = new FileStream(filePath, FileMode.Create);
-            await BallotStyleLinksFile.CopyToAsync(stream);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await BallotStyleLinksFile.CopyToAsync(stream);
+            }
+
+            var dbPath = filePath.Replace(BaseUploadPath + Path.DirectorySeparatorChar, "");
+
             try
             {
-                using var connection = new SqlConnection(connectionString);
+                using var connection = new SqlConnection(_connectionString);
                 connection.Open();
                 using var command = connection.CreateCommand();
                 command.CommandType = CommandType.StoredProcedure;
-                command.CommandText = "Elections.ImportBallotStyles";
-                command.Parameters.AddWithValue("@BallotStyleFile", filePath);
+                command.CommandText = "Elections.ImportBallotStyleLinks";
+                command.Parameters.AddWithValue("@BallotStyleLinksFile", dbPath);
                 command.Parameters.AddWithValue("@ElectionId", ElectionName);
                 command.ExecuteNonQuery();
             }
@@ -185,24 +201,22 @@ public IndexModel(IConfiguration config, IWebHostEnvironment env, ILogger<IndexM
             }
         }
 
-        // Save IsActive to status map
-        // var statusMap = LoadElectionStatus();
-        // statusMap[ElectionName] = new ElectionStatusEntry { IsActive = IsActive };
-        // SaveElectionStatus(statusMap);
-
-        //Windsurf addition
         var statusMap = LoadElectionStatus();
-            if (statusMap.TryGetValue(ElectionName!, out var entry))
+        if (statusMap.TryGetValue(ElectionName!, out var entry))
+        {
+            entry.IsActive = IsActive;
+            entry.Announcement = Announcement;
+        }
+        else
+        {
+            statusMap[ElectionName!] = new ElectionStatusEntry
             {
-                entry.IsActive = IsActive;
-            }
-            else
-            {
-               statusMap[ElectionName!] = new ElectionStatusEntry { IsActive = IsActive };
-            }
-    SaveElectionStatus(statusMap);
-        // end Windsurf addition
+                IsActive = IsActive,
+                Announcement = Announcement
+            };
+        }
 
+        SaveElectionStatus(statusMap);
         UploadMessage = "Update successful!";
         SelectedElection = ElectionName;
         LoadElectionFiles();
@@ -236,11 +250,11 @@ public IndexModel(IConfiguration config, IWebHostEnvironment env, ILogger<IndexM
         var electionName = Request.Form["electionName"].ToString();
         var fileName = Request.Form["fileName"].ToString();
 
-       if (string.IsNullOrWhiteSpace(electionName) || string.IsNullOrWhiteSpace(fileName))
+        if (string.IsNullOrWhiteSpace(electionName) || string.IsNullOrWhiteSpace(fileName))
             return BadRequest("Missing data.");
 
         var basePath = Path.Combine(BaseUploadPath, electionName);
-     var allSubdirs = new[] { "voterlist", "voteridmap", "ballotstylelinks", "sampleballots" };
+        var allSubdirs = new[] { "voterlist", "voteridmap", "ballotstylelinks", "sampleballots" };
 
         foreach (var sub in allSubdirs)
         {
@@ -252,9 +266,8 @@ public IndexModel(IConfiguration config, IWebHostEnvironment env, ILogger<IndexM
             }
         }
 
-    return NotFound();
-}
-
+        return NotFound();
+    }
 
     private void LoadExistingElections()
     {
