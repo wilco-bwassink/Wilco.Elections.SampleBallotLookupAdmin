@@ -237,11 +237,19 @@ System.Diagnostics.Debug.WriteLine($"StatusFilePath set to: {StatusFilePath}");
             return Page();
         }
 
+        //Deletes the election folder
         var path = Path.Combine(BaseUploadPath, ElectionName);
         if (Directory.Exists(path))
         {
             Directory.Delete(path, true);
             UploadMessage = $"Election '{ElectionName}' deleted.";
+        }
+
+        //Deletes the entry from electionstatus.json
+        var statusMap = LoadElectionStatus();
+        if (statusMap.Remove(ElectionName))
+        {
+            SaveElectionStatus(statusMap);
         }
 
         ElectionName = null;
