@@ -364,3 +364,7 @@ FodyWeavers.xsd
 Wilco.Elections.SampleBallotLookup/wwwroot/uploads/
 
 Wilco.Elections.SampleBallotLookup/appsettings.Development.json
+
+Wilco.Elections.SampleBallotLookup/wwwroot/data/electionStatus.json
+
+Wilco.Elections.SampleBallotLookup/appsettings.json
