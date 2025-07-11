@@ -9,15 +9,15 @@ var app = builder.Build();
 // Tell app it's hosted under /sampleBallotAdmin
 // app.UsePathBase("/sampleBallotAdmin");
 
-const string pathBase = "/sampleBallotAdmin";
-app.UsePathBase(pathBase);          // <─ sets HttpRequest.PathBase
-app.Use((ctx, next) =>              // optional: redirect naked requests
-{
-    if (ctx.Request.Path == "/")
-        return Task.Run(() =>
-            ctx.Response.Redirect(pathBase + "/"));
-    return next();
-});
+//const string pathBase = "/sampleBallotAdmin";
+//app.UsePathBase(pathBase);          // <─ sets HttpRequest.PathBase
+//app.Use((ctx, next) =>              // optional: redirect naked requests
+//{
+//    if (ctx.Request.Path == "/")
+//        return Task.Run(() =>
+//            ctx.Response.Redirect(pathBase + "/"));
+//    return next();
+//});
 
 // Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())

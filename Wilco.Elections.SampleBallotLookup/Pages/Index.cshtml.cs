@@ -13,18 +13,24 @@ public class IndexModel : PageModel
     private readonly ILogger<IndexModel> _logger;
     private readonly string _connectionString;
     private readonly string BaseUploadPath;
+    private readonly string StatusFilePath;
 
     public IndexModel(IConfiguration config, IWebHostEnvironment env, ILogger<IndexModel> logger)
-    {
-        _config = config;
-        _env = env;
-        _logger = logger;
-        _connectionString = _config.GetConnectionString("ElectionsDb");
-        BaseUploadPath = _config["ElectionUploadSettings:BasePath"]
-                         ?? @"\\wilcosql1\elections";
-    }
+{
+    _config = config;
+    _env = env;
+    _logger = logger;
+    _connectionString = _config.GetConnectionString("ElectionsDb");
+    BaseUploadPath = _config["ElectionUploadSettings:BasePath"]
+                     ?? @"\\wilcosql1\elections";
 
-    private string StatusFilePath => Path.Combine(BaseUploadPath, "electionStatus.json");
+    var statusPathFromConfig = _config["ElectionUploadSettings:StatusFilePath"];
+    StatusFilePath = Path.Combine(_env.ContentRootPath, "wwwroot", "data", "electionStatus.json");
+Console.WriteLine($"StatusFilePath set to: {StatusFilePath}");
+System.Diagnostics.Debug.WriteLine($"StatusFilePath set to: {StatusFilePath}");
+}
+
+    // private string StatusFilePath => Path.Combine(BaseUploadPath, "electionStatus.json");
 
     [BindProperty(SupportsGet = true)] public string? SelectedElection { get; set; }
     [BindProperty] public string? ElectionName { get; set; }
