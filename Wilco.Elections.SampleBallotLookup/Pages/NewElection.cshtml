@@ -1,0 +1,155 @@
+@page
+@model Wilco.Elections.SampleBallotLookup.Pages.NewElectionModel
+@{
+    ViewData["Title"] = "Admin Panel";
+}
+
+<div class="headerAndNav">
+<h2>New Election Panel</h2>
+<div><a href="/">Lookup Admin</a> | <a href="/newelection">Elections</a></div>
+</div>
+
+<!-- Election Selector -->
+<form method="get">
+    <div>
+        <label for="SelectedElection">Choose Election:</label>
+        <select name="SelectedElection" onchange="this.form.submit()">
+            <option value="">Create New Election...</option>
+            @foreach (var election in Model.ExistingElections)
+            {
+                if (election == Model.SelectedElection)
+                {
+                    <option value="@election" selected>@election</option>
+                }
+                else
+                {
+                    <option value="@election">@election</option>
+                }
+            }
+        </select>
+    </div>
+</form>
+
+<!-- Upload / Update Form -->
+<form method="post" enctype="multipart/form-data" asp-page-handler="Upload">
+    <div>
+        <label>Election Name:</label>
+        <input type="text" name="ElectionName" value="@Model.ElectionName" />
+    </div>
+
+    <div>
+    <label for="announcementField">Announcement:</label>
+    <textarea id="announcementField" asp-for="Announcement"></textarea>
+    </div>
+
+    <div id="switchGroup">
+        <div class="form-group">
+            <label for="isActiveSwitch">Active:</label>
+            <label class="switch">
+                <input type="hidden" name="IsActive" value="false" />
+                <input type="checkbox" name="IsActive" id="isActiveSwitch" value="true" @(Model.IsActive ? "checked" : "") />
+                <span class="slider round"></span>
+            </label>
+        </div>
+
+        <div class="form-group">
+            <label for="isPrimarySwitch">Primary:</label>
+            <label class="switch">
+                <input type="hidden" name="IsPrimary" value="false" />
+                <input type="checkbox" name="IsPrimary" id="isPrimarySwitch" value="true" @(Model.IsPrimary ? "checked" : "") />
+                <span class="slider round"></span>
+            </label>
+        </div>
+    </div>
+    <div>
+        <label>Voter List File:</label>
+        <input type="file" name="VoterListFile" />
+        @if (Model.VoterListFiles.Any())
+        {
+            <ul>
+                @foreach (var file in Model.VoterListFiles)
+                {
+                    var fileId = "file-" + file.Replace(" ", "-").Replace(".", "").Replace("/", "").Replace("\\", "").Replace(":", "").Replace("\"", "");
+                    <li id="@fileId">
+                        @file
+                        <button type="button" class="delete-button deleteButton" data-file="@file">Delete</button>
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+
+    <div>
+        <label>Voter ID → Sample Ballot Mapping:</label>
+        <input type="file" name="VoterIdMapFile" />
+        @if (Model.VoterIdMapFiles.Any())
+        {
+            <ul>
+                @foreach (var file in Model.VoterIdMapFiles)
+                {
+                    var fileId = "file-" + file.Replace(" ", "-").Replace(".", "").Replace("/", "").Replace("\\", "").Replace(":", "").Replace("\"", "");
+                    <li id="@fileId">
+                        @file
+                        <button type="button" class="delete-button deleteButton" data-file="@file">Delete</button>
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+
+    <div>
+        <label>Ballot Style Links:</label>
+        <input type="file" name="BallotStyleLinksFile" />
+        @if (Model.BallotStyleLinksFiles.Any())
+            {
+                <ul>
+                    @foreach (var file in Model.BallotStyleLinksFiles)
+                    {
+                        var fileId = "file-" + file.Replace(" ", "-").Replace(".", "").Replace("/", "").Replace("\\", "").Replace(":", "").Replace("\"", "");
+                        <li id="@fileId">
+                            @file
+                            <button type="button" class="delete-button deleteButton" data-file="@file">Delete</button>
+                        </li>
+                    }
+                </ul>
+            }
+    </div>
+
+    <div id="sample-ballot-section">
+    <label>Sample Ballot PDFs:</label>
+    <input type="file" name="UploadedSampleBallotFiles" multiple />
+    @if (Model.SampleBallotFiles.Any())
+    {
+        <ul>
+            @foreach (var file in Model.SampleBallotFiles)
+            {
+                var fileId = "file-" + file.Replace(" ", "-").Replace(".", "").Replace("/", "").Replace("\\", "").Replace(":", "").Replace("\"", "");
+                <li id="@fileId">
+                    @file
+                    <button type="button" class="delete-button deleteButton" data-file="@file">Delete</button>
+                </li>
+            }
+        </ul>
+        <button type="button" class="deleteButton" id="delete-all-sampleballots" style="margin-top:0.5em;">Delete All Sample Ballots</button>
+    }
+</div>
+
+
+    <button class="updateButton" type="submit">Update</button>
+</form>
+
+<!-- Delete Entire Election -->
+@if (!string.IsNullOrWhiteSpace(Model.SelectedElection))
+{
+    <form method="post" asp-page-handler="DeleteElection">
+        <input type="hidden" name="ElectionName" value="@Model.SelectedElection" />
+        <button type="submit" class="deleteButton">
+            Delete This Election
+        </button>
+    </form>
+}
+
+@if (Model.UploadMessage != null)
+{
+    <p>@Model.UploadMessage</p>
+}

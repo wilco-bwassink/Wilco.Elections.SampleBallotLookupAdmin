@@ -41,6 +41,16 @@ form {
   }
 }
 
+.headerAndNav {
+display: flex;
+flex-direction: row;
+justify-content: space-between;
+}
+#switchGroup {
+  display: flex;
+  flex-direction: row;
+}
+
 .updateButton {
   background-color: var(--wc-green);
   color: #fff;
