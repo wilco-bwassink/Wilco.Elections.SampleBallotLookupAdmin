@@ -10,21 +10,22 @@
 </div>
 <form method="post">
     <div>
-        <label for="EnglishText">English Text</label>
-        <textarea name="EnglishText" id="EnglishText" rows="6" cols="80">@Model.Settings.EnglishText</textarea>
-    </div>
-    <div>
-        <label for="SpanishText">Spanish Text </label>
-        <textarea name="SpanishText" id="SpanishText" rows="6" cols="80">@Model.Settings.SpanishText</textarea>
-    </div>
-    <div class="form-group">
-            <label for="ShowSampleBallots">Display Sample Ballots?:</label>
-            <label class="switch">
-                <input type="hidden" name="ShowSampleBallots" value="false" />
-                <input type="checkbox" name="ShowSampleBallots" id="showBallotsSwitch" value="true" @(Model.ShowSampleBallots ? "checked" : "") />
-                <span class="slider round"></span>
-            </label>
-    </div>
+    <label asp-for="Settings.EnglishText">English Text</label>
+    <textarea asp-for="Settings.EnglishText" rows="6" cols="80"></textarea>
+  </div>
+  <div>
+    <label asp-for="Settings.SpanishText">Spanish Text</label>
+    <textarea asp-for="Settings.SpanishText" rows="6" cols="80"></textarea>
+  </div>
+    <div class="form-check form-switch form-sampleBallotSwitch">
+    <p>Display Sample Ballot?</p>
+    <label class="switch">
+  <input asp-for="Settings.ShowSampleBallot" type="checkbox" />
+  <span class="slider"></span>
+</label>
+
+  </div>
+
 
     <button class="updateButton" type="submit">Save</button>
 </form>
