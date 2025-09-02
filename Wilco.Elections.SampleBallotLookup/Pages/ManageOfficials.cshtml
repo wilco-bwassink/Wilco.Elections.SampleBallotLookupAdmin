@@ -107,7 +107,7 @@
             </form>
           </tr>
         }
-        <tr>
+        @* <tr>
           <form method="post">
             @Html.AntiForgeryToken()
             <input type="hidden" name="TableName" value="@Model.TableName" />
@@ -144,7 +144,7 @@
               <button formaction="?handler=Insert" class="button button__green">Add</button>
             </td>
           </form>
-        </tr>
+        </tr> *@
       </tbody>
     </table>
   </div>
