@@ -8,18 +8,17 @@
   .page-title { font-size: 1.5rem; font-weight: 600; margin: 0 0 12px; }
   .toolbar { margin: 0 0 16px; display:flex; gap:8px; align-items:center; flex-direction: row;}
   .select, .input, .button { padding: 6px 10px; border: 1px solid #c9c9c9; border-radius: 6px; font: inherit; }
-  .button { cursor: pointer; background: #f7f7f7; }
-  .button:hover { background: #eee; }
   .msg { margin: 8px 0 16px; padding: 10px 12px; border:1px solid #e0e0e0; border-radius:8px; background:#fafafa; }
   .table-wrap { overflow-x:auto; }
   table { border-collapse: collapse; min-width: 900px; width: 100%; }
   th, td { border: 1px solid #e0e0e0; padding: 6px 8px; text-align: left; vertical-align: top; }
-  thead th { background: #f3f3f3; }
+  thead th { background: #e7e5e2; }
   .actions { white-space: nowrap; }
   textarea.input { min-height: 60px; resize: vertical; }
   .hint { color:#666; font-size: .9rem; }
-  .number {max-width:3em;}
-  th:has(+ .number) {width: 3em;}
+  .sort {max-width:50px;}
+  td:has(.sort) {max-width: 100px;}
+  th:nth-child(3) {max-width:100px}
 </style>
 
 <div class="headerAndNav">
@@ -89,7 +88,7 @@
                   }
                   else if (col.InputType == "number")
                   {
-                    <input class="input" type="number" name="Fields[@col.ColumnName]" value="@text" />
+                    <input class="input sort" type="number" name="Fields[@col.ColumnName]" value="@text" />
                   }
                   else if (col.InputType == "url")
                   {
@@ -102,8 +101,8 @@
                 </td>
               }
               <td class="actions">
-                <button formaction="?handler=Update" class="button">Save</button>
-                <button formaction="?handler=Delete" class="button" onclick="return confirm('Delete this row?');">Delete</button>
+                <button formaction="?handler=Update" class="button button__green">Save</button>
+                <button formaction="?handler=Delete" class="button button__tan" onclick="return confirm('Delete this row?');">Delete</button>
               </td>
             </form>
           </tr>
@@ -129,7 +128,7 @@
                 }
                 else if (col.InputType == "number")
                 {
-                  <input class="input" type="number" name="Fields[@col.ColumnName]" />
+                  <input class="input sort" type="number" name="Fields[@col.ColumnName]" />
                 }
                 else if (col.InputType == "url")
                 {
@@ -142,7 +141,7 @@
               </td>
             }
             <td class="actions">
-              <button formaction="?handler=Insert" class="button">Add</button>
+              <button formaction="?handler=Insert" class="button button__green">Add</button>
             </td>
           </form>
         </tr>
