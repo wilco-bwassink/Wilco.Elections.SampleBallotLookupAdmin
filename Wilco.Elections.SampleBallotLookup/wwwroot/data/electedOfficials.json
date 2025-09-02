@@ -1,0 +1,400 @@
+{
+  "electedOfficials": {
+    "federal": [
+      {
+        "name": "Donald J. Trump",
+        "position": "President of the United States",
+        "website": "http://localhost:3001/www.whitehouse.gov"
+      },
+      {
+        "name": "J.D. Vance",
+        "position": "Vice President of the United States",
+        "website": "https://www.whitehouse.gov"
+      },
+      {
+        "name": "John Cornyn",
+        "position": "United States Senator (Texas)",
+        "party": "Republican",
+        "website": "https://www.cornyn.senate.gov"
+      },
+      {
+        "name": "Ted Cruz",
+        "position": "United States Senator (Texas)",
+        "party": "Republican",
+        "website": "http://www.cruz.senate.gov"
+      },
+      {
+        "name": "Michael McCaul",
+        "position": "United States Representative",
+        "district": "TX-10",
+        "website": "https://mccaul.house.gov/"
+      },
+      {
+        "name": "Pete Sessions",
+        "position": "United States Representative",
+        "district": "TX-17",
+        "website": "https://sessions.house.gov/"
+      },
+      {
+        "name": "John Carter",
+        "position": "United States Representative",
+        "district": "TX-31",
+        "website": "https://carter.house.gov/"
+      },
+      {
+        "name": "Lloyd Doggett",
+        "position": "United States Representative",
+        "website": "https://doggett.house.gov/"
+      }
+    ],
+    "state": [
+      {
+        "name": "Greg Abbott",
+        "position": "Governor of Texas",
+        "website": "https://gov.texas.gov/"
+      },
+      {
+        "name": "Dan Patrick",
+        "position": "Lieutenant Governor of Texas",
+        "website": "https://ltgov.texas.gov/"
+      },
+      {
+        "name": "Ken Paxton",
+        "position": "Attorney General of Texas",
+        "website": "https://www.texasattorneygeneral.gov/"
+      },
+      {
+        "name": "Kelly Hancock",
+        "position": "Comptroller of Public Accounts",
+        "website": "https://comptroller.texas.gov/"
+      },
+      {
+        "name": "Dawn Buckingham",
+        "position": "Commissioner of the General Land Office",
+        "website": "https://www.glo.texas.gov/"
+      },
+      {
+        "name": "Sid Miller",
+        "position": "Commissioner of Agriculture ",
+        "website": "https://texasagriculture.gov/"
+      },
+      {
+        "name": "Jim Wright",
+        "position": "Texas Railroad Commissioner (Chairman)",
+        "website": "https://www.rrc.texas.gov/about-us/commissioners/jim-wright/"
+      },
+      {
+        "name": "Christi Craddick",
+        "position": "Texas Railroad Commissioner",
+        "website": "https://www.rrc.texas.gov/about-us/commissioners/christi-craddick/"
+      },
+      {
+        "name": "Wayne Christian",
+        "position": "Texas Railroad Commissioner",
+        "website": "https://www.rrc.texas.gov/About-Us/Commissioners/Wayne-Christian/"
+      },
+      {
+        "name": "Nathan L. Hecht",
+        "position": "Chief Justice, Supreme Court",
+        "website": "http://www.txcourts.gov/supreme/"
+      },
+      {
+        "name": "Jimmy Blacklock",
+        "position": "Supreme Court Justice Place 2",
+        "website": "http://www.txcourts.gov/supreme/"
+      },
+      {
+        "name": "Debra Lehrmann",
+        "position": "Supreme Court Justice Place 3",
+        "website": "http://www.txcourts.gov/supreme/"
+      },
+      {
+        "name": "John Phillip Devine",
+        "position": "Supreme Court Justice Place 4",
+        "website": "http://www.txcourts.gov/supreme/"
+      },
+      {
+        "name": "Paul W. Green ",
+        "position": "Supreme Court Justice Place 5",
+        "website": "http://www.txcourts.gov/supreme/"
+      },
+      {
+        "name": "Jane Bland",
+        "position": "Supreme Court Justice Place 6",
+        "website": "http://www.txcourts.gov/supreme/"
+      },
+      {
+        "name": "Jeffrey S. Boyd",
+        "position": "Supreme Court Justice Place 7",
+        "website": "http://www.txcourts.gov/supreme/"
+      },
+      {
+        "name": "Brett Busby",
+        "position": "Supreme Court Justice Place 8",
+        "website": "http://www.txcourts.gov/supreme/"
+      },
+      {
+          "name": "Eva Guzman",
+          "position": "Supreme Court Justice Place 9",
+          "website": "http://www.txcourts.gov/supreme/"
+        },
+        {
+          "name": "David J. Schenck",
+          "position": "Presiding Judge, Court of Criminal Appeals",
+          "website": "http://www.txcourts.gov/cca/"
+        },
+        {
+          "name": "David J. Schenck",
+          "position": "Presiding Judge, Court of Criminal Appeals",
+          "website": "http://www.txcourts.gov/cca/"
+        },
+        {
+          "name": "Michelle Slaughter",
+          "position": "Court of Criminal Appeals Judge, Place 2",
+          "website": "http://www.txcourts.gov/cca/"
+        },
+        {
+          "name": "Kevin Patrick Yeary",
+          "position": "Court of Criminal Appeals Judge, Place 3",
+          "website": "http://www.txcourts.gov/cca/"
+        },
+        {
+          "name": "Mary Lou Keel",
+          "position": "Court of Criminal Appeals Judge, Place 4",
+          "website": "http://www.txcourts.gov/cca/"
+        },
+        {
+          "name": "David Newell",
+          "position": "Court of Criminal Appeals Judge, Place 5",
+          "website": "http://www.txcourts.gov/cca/"
+        },
+        {
+          "name": "Martha Hill Jamison",
+          "position": "Court of Criminal Appeals Judge, Place 6",
+          "website": "http://www.txcourts.gov/cca/"
+        },
+        {
+          "name": "Brandon Birmingham",
+          "position": "Court of Criminal Appeals Judge, Place 7",
+          "website": "http://www.txcourts.gov/cca/"
+        },
+        {
+          "name": "Rachel Palmer",
+          "position": "Court of Criminal Appeals Judge, Place 8",
+          "website": "http://www.txcourts.gov/cca/"
+        },
+      {
+        "name": "Rebecca Bell-Metereau",
+        "position": "State Board of Education, District 5",
+        "website": "https://tea.texas.gov/about-tea/leadership/state-board-of-education/sboe-board-members/sboe-member-district-5"
+      },
+      {
+        "name": "Tom Maynard",
+        "position": "State Board of Education, District 10",
+        "website": "http://www.tea.state.tx.us/index4.aspx?id=3715"
+      },
+      {
+        "name": "Charles Schwertner",
+        "position": "State Senator, District 5",
+        "website": "http://www.senate.state.tx.us/member.php?d=5"
+      },
+      {
+        "name": "Pete Flores",
+        "position": "State Senator, District 24",
+        "website": "https://senate.texas.gov/member.php?d=24"
+      },
+      {
+        "name": "John Bucy III",
+        "position": "State Representative, District 136",
+        "website": "http://www.house.state.tx.us/members/member-page/?district=136"
+      },
+      {
+        "name": "Terry Wilson",
+        "position": "State Representative, District 20",
+        "website": "http://www.house.state.tx.us/members/member-page/?district=20"
+      },
+      {
+        "name": "Caroline Harris Davila",
+        "position": "State Representative, District 52",
+        "website": "http://www.house.state.tx.us/members/member-page/?district=20"
+      },
+      {
+        "name": "Donna King",
+        "position": "26th District Court Judge",
+        "website": "https://www.wilcotx.gov/455/26th-District-Court"
+      },
+      {
+        "name": "Stacey Mathews",
+        "position": "277th District Court Judge",
+        "website": "https://www.wilcotx.gov/466/277th-District-Court"
+      },
+      {
+        "name": "Rick J. Kennon",
+        "position": "368th District Court Judge",
+        "website": "https://www.wilcotx.gov/487/368th-District-Court"
+      },
+      {
+        "name": "Ryan Larson",
+        "position": "395th District Court Judge",
+        "website": "https://www.wilcotx.gov/500/395th-District-Court"
+      },
+      {
+        "name": "Betsy Lambeth",
+        "position": "425th District Court Judge",
+        "website": "https://www.wilcotx.gov/517/425th-District-Court"
+      }
+    ],
+    "county": [
+      {
+        "name": "Steven Snell",
+        "position": "County Judge",
+        "precinct": "0",
+        "website": "https://www.wilcotx.gov/countyjudge"
+      },
+      {
+        "name": "Shawn Dick",
+        "position": "District Attorney",
+        "precinct": "0",
+        "website": "https://www.wilcotx.gov/da"
+      },
+      {
+        "name": "Brandy Hallford",
+        "position": "County Court at Law 1",
+        "precinct": "0",
+        "website": "https://www.wilcotx.gov/ccl1"
+      },
+      {
+        "name": "Laura Barker",
+        "position": "County Court at Law 2",
+        "precinct": "0",
+        "website": "https://www.wilcotx.gov/ccl2"
+      },
+      {
+        "name": "Doug Arnold",
+        "position": "County Court at Law 3",
+        "precinct": "0",
+        "website": "https://www.wilcotx.gov/ccl3"
+      },
+      {
+        "name": "John B. McMaster",
+        "position": "County Court at Law 4",
+        "precinct": "0",
+        "website": "https://www.wilcotx.gov/ccl4"
+      },
+      {
+        "name": "Will Ward",
+        "position": "County Court at Law 5",
+        "precinct": "0",
+        "website": "https://www.wilcotx.gov/ccl5"
+      },
+      {
+        "name": "Doyle \"Dee\" Hobbs Jr",
+        "position": "County Attorney",
+        "precinct": "0",
+        "website": "https://www.wilcotx.gov/ca"
+      },
+      {
+        "name": "Lisa David",
+        "position": "District Clerk",
+        "precinct": "0",
+        "website": "https://www.wilcotx.gov/districtclerk"
+      },
+      {
+        "name": "Nancy E. Rister",
+        "position": "County Clerk",
+        "precinct": "0",
+        "website": "https://www.wilcotx.gov/countyclerk"
+      },
+      {
+        "name": "Matthew Lindemann",
+        "position": "Sheriff",
+        "precinct": "0",
+        "website": "https://www.wilcotx.gov/so"
+      },
+      {
+        "name": "Larry Gaddes",
+        "position": "Tax Assessor-Collector",
+        "precinct": "0",
+        "website": "https://www.wilcotx.gov/taxoffice"
+      },
+      {
+        "name": "D. Scott Heselmeyer",
+        "position": "County Treasurer",
+        "precinct": "0",
+        "website": "https://www.wilcotx.gov/treasurer"
+      },
+      {
+        "name": "Terry Cook",
+        "position": "Commissioner, Precinct 1",
+        "precinct": "1",
+        "website": "https://www.wilcotx.gov/comm1"
+      },
+      {
+        "name": "Cynthia Long",
+        "position": "Commissioner, Precinct 2",
+        "precinct": "2",
+        "website": "https://www.wilcotx.gov/comm2"
+      },
+      {
+        "name": "Valerie Covey",
+        "position": "Commissioner, Precinct 3",
+        "precinct": "3",
+        "website": "https://www.wilcotx.gov/comm3"
+      },
+      {
+        "name": "Russ Boles",
+        "position": "Commissioner, Precinct 4",
+        "precinct": "4",
+        "website": "https://www.wilcotx.gov/comm4"
+      },
+      {
+        "name": "KT Musselman",
+        "position": "Justice of the Peace, Precinct 1",
+        "precinct": "1",
+        "website": "https://www.wilcotx.gov/jp1"
+      },
+      {
+        "name": "Angela Williams",
+        "position": "Justice of the Peace, Precinct 2",
+        "precinct": "2",
+        "website": "https://www.wilcotx.gov/jp2"
+      },
+      {
+        "name": "Evelyn McLean",
+        "position": "Justice of the Peace, Precinct 3",
+        "precinct": "3",
+        "website": "https://www.wilcotx.gov/jp3"
+      },
+      {
+        "name": "Rhonda Redden",
+        "position": "Justice of the Peace, Precinct 4",
+        "precinct": "4",
+        "website": "https://www.wilcotx.gov/jp4"
+      },
+      {
+        "name": "Mickey Chance",
+        "position": "Constable, Precinct 1",
+        "precinct": "1",
+        "website": "https://www.wilcotx.gov/constable1"
+      },
+      {
+        "name": "Jeff Anderson",
+        "position": "Constable, Precinct 2",
+        "precinct": "2",
+        "website": "https://www.wilcotx.gov/constable2"
+      },
+      {
+        "name": "Kevin Wilkie",
+        "position": "Constable, Precinct 3",
+        "precinct": "3",
+        "website": "https://www.wilcotx.gov/constable3"
+      },
+      {
+        "name": "Paul Leal",
+        "position": "Constable, Precinct 4",
+        "precinct": "4",
+        "website": "https://www.wilcotx.gov/constable4"
+      }
+    ]
+  }
+}

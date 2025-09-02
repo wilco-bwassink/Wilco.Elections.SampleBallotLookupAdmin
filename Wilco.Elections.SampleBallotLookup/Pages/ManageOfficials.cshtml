@@ -1,0 +1,156 @@
+@page
+@model Wilco.Elections.SampleBallotLookup.Pages.ManageOfficialsModel
+@{
+    ViewData["Title"] = "Manage Officials (County/Federal/State)";
+}
+
+<style>
+  .page-title { font-size: 1.5rem; font-weight: 600; margin: 0 0 12px; }
+  .toolbar { margin: 0 0 16px; display:flex; gap:8px; align-items:center; flex-direction: row;}
+  .select, .input, .button { padding: 6px 10px; border: 1px solid #c9c9c9; border-radius: 6px; font: inherit; }
+  .button { cursor: pointer; background: #f7f7f7; }
+  .button:hover { background: #eee; }
+  .msg { margin: 8px 0 16px; padding: 10px 12px; border:1px solid #e0e0e0; border-radius:8px; background:#fafafa; }
+  .table-wrap { overflow-x:auto; }
+  table { border-collapse: collapse; min-width: 900px; width: 100%; }
+  th, td { border: 1px solid #e0e0e0; padding: 6px 8px; text-align: left; vertical-align: top; }
+  thead th { background: #f3f3f3; }
+  .actions { white-space: nowrap; }
+  textarea.input { min-height: 60px; resize: vertical; }
+  .hint { color:#666; font-size: .9rem; }
+  .number {max-width:3em;}
+  th:has(+ .number) {width: 3em;}
+</style>
+
+<div class="headerAndNav">
+<h2>Manage Elected Officials</h2>
+    <div><a href="/sampleBallotAdmin">Lookup Admin</a> | <a href="/sampleBallotAdmin/newelection">Elections</a> | <a href="/sampleBallotAdmin/ManageOfficials">Elected Officials</a></div>
+</div>
+
+<form method="get" class="toolbar">
+  <label for="tableName"><strong>Choose table:</strong></label>
+  <select id="tableName" name="TableName" class="select">
+    <option value="County" selected="@(Model.TableName == "County")">County</option>
+    <option value="Federal" selected="@(Model.TableName == "Federal")">Federal</option>
+    <option value="State" selected="@(Model.TableName == "State")">State</option>
+  </select>
+  <button type="submit" class="button">Load</button>
+</form>
+
+@if (!string.IsNullOrWhiteSpace(Model.StatusMessage))
+{
+  <div class="msg">@Model.StatusMessage</div>
+}
+
+@if (Model.Columns?.Any() == true)
+{
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          @foreach (var col in Model.Columns)
+          {
+            <th>@(col.DisplayName ?? col.ColumnName)</th>
+          }
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var row in Model.Rows)
+        {
+          <tr>
+            <form method="post">
+              @Html.AntiForgeryToken()
+              <input type="hidden" name="TableName" value="@Model.TableName" />
+              @* <input type="hidden" name="Id" value="@row[Model.KeyColumn]" /> Removed to be replaced by*@ 
+              @foreach (var k in Model.Columns.Where(c => c.IsKey))
+              {
+                <input type="hidden" name="Keys[@k.ColumnName]" value="@row[k.ColumnName]" />
+              }
+
+              @foreach (var col in Model.Columns)
+              {
+                var value = row[col.ColumnName];
+                var text = Convert.ToString(value);
+                <td>
+                  @if (col.IsReadOnly)
+                  {
+                    <span>@text</span>
+                  }
+                  else if (col.InputType == "textarea")
+                  {
+                    <textarea class="input" name="Fields[@col.ColumnName]">@text</textarea>
+                  }
+                  else if (col.InputType == "date")
+                  {
+                    var iso = "";
+                    if (DateTime.TryParse(text, out var dt)) iso = dt.ToString("yyyy-MM-dd");
+                    <input class="input" type="date" name="Fields[@col.ColumnName]" value="@iso" />
+                  }
+                  else if (col.InputType == "number")
+                  {
+                    <input class="input" type="number" name="Fields[@col.ColumnName]" value="@text" />
+                  }
+                  else if (col.InputType == "url")
+                  {
+                    <input class="input" type="url" name="Fields[@col.ColumnName]" value="@text" />
+                  }
+                  else
+                  {
+                    <input class="input" name="Fields[@col.ColumnName]" value="@text" />
+                  }
+                </td>
+              }
+              <td class="actions">
+                <button formaction="?handler=Update" class="button">Save</button>
+                <button formaction="?handler=Delete" class="button" onclick="return confirm('Delete this row?');">Delete</button>
+              </td>
+            </form>
+          </tr>
+        }
+        <tr>
+          <form method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="TableName" value="@Model.TableName" />
+            @foreach (var col in Model.Columns)
+            {
+              <td>
+                @if (col.IsReadOnly)
+                {
+                  <em class="hint">(auto)</em>
+                }
+                else if (col.InputType == "textarea")
+                {
+                  <textarea class="input" name="Fields[@col.ColumnName]"></textarea>
+                }
+                else if (col.InputType == "date")
+                {
+                  <input class="input" type="date" name="Fields[@col.ColumnName]" />
+                }
+                else if (col.InputType == "number")
+                {
+                  <input class="input" type="number" name="Fields[@col.ColumnName]" />
+                }
+                else if (col.InputType == "url")
+                {
+                  <input class="input" type="url" name="Fields[@col.ColumnName]" />
+                }
+                else
+                {
+                  <input class="input" name="Fields[@col.ColumnName]" />
+                }
+              </td>
+            }
+            <td class="actions">
+              <button formaction="?handler=Insert" class="button">Add</button>
+            </td>
+          </form>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+}
+else if (!string.IsNullOrEmpty(Model.TableName))
+{
+  <p>No columns found for Elections.@Model.TableName. Check table existence and permissions.</p>
+}
