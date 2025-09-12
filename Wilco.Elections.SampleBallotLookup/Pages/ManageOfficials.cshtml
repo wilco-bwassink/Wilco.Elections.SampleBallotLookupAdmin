@@ -100,10 +100,22 @@
                   }
                 </td>
               }
-              <td class="actions">
-                <button formaction="?handler=Update" class="button button__green">Save</button>
-                <button formaction="?handler=Delete" class="button button__tan" onclick="return confirm('Delete this row?');">Delete</button>
-              </td>
+                        <td class="actions">
+                            <button type="submit"
+                                    formmethod="post"
+                                    formaction='@Url.Page("./ManageOfficials", new { handler = "Update" })'
+                                    class="button button__green">
+                                Save
+                            </button>
+
+                            <button type="submit"
+                                    formmethod="post"
+                                    formaction='@Url.Page("./ManageOfficials", new { handler = "Delete" })'
+                                    class="button button__tan"
+                                    onclick="return confirm(" Delete this row?");">
+                                Delete
+                            </button>
+                        </td>
             </form>
           </tr>
         }

@@ -34,6 +34,7 @@ System.Diagnostics.Debug.WriteLine($"StatusFilePath set to: {StatusFilePath}");
 
     [BindProperty(SupportsGet = true)] public string? SelectedElection { get; set; }
     [BindProperty] public string? ElectionName { get; set; }
+    [BindProperty] public string? ElectionNameSpanish { get; set; }
     [BindProperty] public IFormFile? VoterListFile { get; set; }
     [BindProperty] public IFormFile? VoterIdMapFile { get; set; }
     [BindProperty] public IFormFile? BallotStyleLinksFile { get; set; }
@@ -41,6 +42,7 @@ System.Diagnostics.Debug.WriteLine($"StatusFilePath set to: {StatusFilePath}");
     [BindProperty] public bool IsActive { get; set; }
     [BindProperty] public bool IsPrimary { get; set; }
     [BindProperty] public string? Announcement { get; set; }
+    [BindProperty] public string? AnnouncementSpanish { get; set; }
 
     public string? UploadMessage { get; set; }
     public List<string> VoterListFiles { get; set; } = new();
@@ -54,6 +56,8 @@ System.Diagnostics.Debug.WriteLine($"StatusFilePath set to: {StatusFilePath}");
         public bool IsActive { get; set; }
         public bool IsPrimary { get; set; }
         public string? Announcement { get; set; }
+        public string? AnnouncementSpanish { get; set; }
+        public string? ElectionNameSpanish { get; set; }
     }
 
     public class ElectionStatusMap : Dictionary<string, ElectionStatusEntry> { }
@@ -86,6 +90,8 @@ System.Diagnostics.Debug.WriteLine($"StatusFilePath set to: {StatusFilePath}");
                 IsActive = entry.IsActive;
                 IsPrimary = entry.IsPrimary;
                 Announcement = entry.Announcement;
+                AnnouncementSpanish = entry.AnnouncementSpanish;
+                ElectionNameSpanish = entry.ElectionNameSpanish;
             }
         }
     }
@@ -221,6 +227,8 @@ System.Diagnostics.Debug.WriteLine($"StatusFilePath set to: {StatusFilePath}");
             entry.IsActive = IsActive;
             entry.IsPrimary = IsPrimary;
             entry.Announcement = Announcement;
+            entry.AnnouncementSpanish = AnnouncementSpanish;
+            entry.ElectionNameSpanish = ElectionNameSpanish;
         }
         else
         {
@@ -228,7 +236,9 @@ System.Diagnostics.Debug.WriteLine($"StatusFilePath set to: {StatusFilePath}");
             {
                 IsActive = IsActive,
                 IsPrimary = IsPrimary,
-                Announcement = Announcement
+                Announcement = Announcement,
+                AnnouncementSpanish = AnnouncementSpanish,
+                ElectionNameSpanish = ElectionNameSpanish
             };
         }
 

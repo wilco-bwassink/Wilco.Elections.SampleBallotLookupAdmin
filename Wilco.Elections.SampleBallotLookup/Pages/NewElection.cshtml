@@ -36,12 +36,19 @@
         <label>Election Name:</label>
         <input type="text" name="ElectionName" value="@Model.ElectionName" />
     </div>
+    <div>
+        <label asp-for="ElectionNameSpanish">Spanish Election Name</label>
+        <input asp-for="ElectionNameSpanish" class="form-control" />
+    </div>
 
     <div>
     <label for="announcementField">Announcement:</label>
     <textarea id="announcementField" asp-for="Announcement"></textarea>
     </div>
-
+    <div>
+        <label asp-for="AnnouncementSpanish">Spanish Announcement</label>
+        <textarea asp-for="AnnouncementSpanish" class="form-control"></textarea>
+    </div>
     <div id="switchGroup">
         <div class="form-group">
             <label for="isActiveSwitch">Active:</label>
