@@ -130,3 +130,57 @@ input:checked + .slider {
 input:checked + .slider:before {
   transform: translateX(26px);
 }
+
+.label-button-pair {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5em;
+}
+/***  Pop Over Styling  ***/
+[popover]:not(:popover-open) { display: none; }
+.popoverButton {color: var(--wc-main); font-size:1.5rem;}
+[popover] {background: #FFF;padding: 1rem 1.5rem;border-radius: 1rem;max-width: 50ch;}
+.popover-container {position: static;}
+
+.popover-info {cursor: pointer;}
+.popoverButton {background: transparent;border: 0;cursor: pointer;font-weight: 700;} 
+
+.popover-content {
+  background: #fff; padding: 1rem 1.25rem; border-radius: .75rem; box-shadow: 0 6px 24px rgba(0,0,0,.12); max-width: 50ch;}
+@position-try --topLeft {position-area:top span-right} 
+#voterListInfoButton {anchor-name: --voterList}
+#voterIDInfoButton {anchor-name: --voterID}
+#ballotStyleLinksInfoButton {anchor-name: --ballotStyleLinks} 
+#sampleBallotInfoButton {anchor-name: --sampleBallot}
+
+#voterListInfo {
+  position-anchor: --voterList;
+  inset-area: top;           /* place above the anchor */
+  translate: 0 -8px;         /* nudge up a bit */
+}
+
+#voterIDInfo {
+  position-anchor: --voterID;
+  inset-area: top;
+  translate: 0 -8px;
+}
+
+#ballotStyleLinksInfo {
+  position-anchor: --ballotSyleLinks;
+  inset-area: top;
+  translate: 0 -8px;
+}
+
+#sampleBallotInfo {
+  position-anchor: --sampleBallot;
+  inset-area: top;
+  translate: 0 -8px;
+}
+
+/* Optional: try a secondary placement if ‘top’ won’t fit */
+@position-try --below { inset-area: bottom; translate: 0 8px; }
+
+#voterListInfo, #voterIDInfo {
+  position-try-options: --below; /* fall back to below if needed */
+}

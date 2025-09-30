@@ -5,8 +5,9 @@
 }
 
 <div class="headerAndNav">
-<h2>New Election Panel</h2>
-    <div><a href="/sampleBallotAdmin">Lookup Admin</a> | <a href="/sampleBallotAdmin/newelection">Elections</a> | <a href="/sampleBallotAdmin/ManageOfficials">Elected Officials</a></div>
+    <h2>New Election Panel</h2>
+    <div><a href="/sampleBallotAdmin">Lookup Admin</a> | <a href="/sampleBallotAdmin/newelection">Elections</a> | <a
+            href="/sampleBallotAdmin/ManageOfficials">Elected Officials</a></div>
 </div>
 
 <!-- Election Selector -->
@@ -42,8 +43,8 @@
     </div>
 
     <div>
-    <label for="announcementField">Announcement:</label>
-    <textarea id="announcementField" asp-for="Announcement"></textarea>
+        <label for="announcementField">Announcement:</label>
+        <textarea id="announcementField" asp-for="Announcement"></textarea>
     </div>
     <div>
         <label asp-for="AnnouncementSpanish">Spanish Announcement</label>
@@ -54,7 +55,8 @@
             <label for="isActiveSwitch">Active:</label>
             <label class="switch">
                 <input type="hidden" name="IsActive" value="false" />
-                <input type="checkbox" name="IsActive" id="isActiveSwitch" value="true" @(Model.IsActive ? "checked" : "") />
+                <input type="checkbox" name="IsActive" id="isActiveSwitch" value="true" @(Model.IsActive ? "checked" :
+                                                                                                            "") />
                 <span class="slider round"></span>
             </label>
         </div>
@@ -63,20 +65,34 @@
             <label for="isPrimarySwitch">Primary:</label>
             <label class="switch">
                 <input type="hidden" name="IsPrimary" value="false" />
-                <input type="checkbox" name="IsPrimary" id="isPrimarySwitch" value="true" @(Model.IsPrimary ? "checked" : "") />
+                <input type="checkbox" name="IsPrimary" id="isPrimarySwitch" value="true" @(Model.IsPrimary ? "checked"
+                                                                                                              : "") />
                 <span class="slider round"></span>
             </label>
         </div>
     </div>
     <div>
-        <label>Voter List File:</label>
+        <div class="label-button-pair"><label>Voter List File:</label>
+            <button type="button" id="voterListInfoButton" class="popoverButton" popovertarget="voterListInfo"
+                popovertargetaction="toggle">ⓘ</button>
+        </div>
+
+        <div popover id="voterListInfo" class="popover-content">
+            <p>Voter List files should be:</p>
+            <ul>
+            <li>File type should be .csv</li>
+            <li>Files should be pipe delimited to prevent conflicts with commas in the content</li>
+            </ul>
+            <button type="button" popovertarget="voterListInfo" popovertargetaction="hide">Close</button>
+        </div>
         <input type="file" name="VoterListFile" />
         @if (Model.VoterListFiles.Any())
         {
             <ul>
                 @foreach (var file in Model.VoterListFiles)
                 {
-                    var fileId = "file-" + file.Replace(" ", "-").Replace(".", "").Replace("/", "").Replace("\\", "").Replace(":", "").Replace("\"", "");
+                    var fileId = "file-" + file.Replace(" ", "-").Replace(".", "").Replace("/", "").Replace("\\",
+                    "").Replace(":", "").Replace("\"", "");
                     <li id="@fileId">
                         @file
                         <button type="button" class="delete-button deleteButton" data-file="@file">Delete</button>
@@ -87,14 +103,33 @@
     </div>
 
     <div>
-        <label>Voter ID → Sample Ballot Mapping:</label>
+        <div class="label-button-pair"><label>Voter ID → Sample Ballot Mapping:</label>
+            <button type="button" id="voterIDInfoButton" class="popoverButton" popovertarget="voterIDInfo"
+                popovertargetaction="toggle">ⓘ</button>
+        </div>
+
+        <div popover id="voterIDInfo" class="popover-content">
+            <p>Voter ID to Sample Ballot mapping files should be:</p>
+            <ul>
+            <li>File type should be .csv</li>
+            <li>Files should be pipe delimited to prevent conflicts with commas in the content</li>
+            <li>Files should contain these columns in this order
+            <ol>
+            <li>IDNUMBER</li>
+            <li>BALLOTSTYLE</li>
+            </ol>
+            </li>
+            </ul>
+            <button type="button" popovertarget="voterIDInfo" popovertargetaction="hide">Close</button>
+        </div>
         <input type="file" name="VoterIdMapFile" />
         @if (Model.VoterIdMapFiles.Any())
         {
             <ul>
                 @foreach (var file in Model.VoterIdMapFiles)
                 {
-                    var fileId = "file-" + file.Replace(" ", "-").Replace(".", "").Replace("/", "").Replace("\\", "").Replace(":", "").Replace("\"", "");
+                    var fileId = "file-" + file.Replace(" ", "-").Replace(".", "").Replace("/", "").Replace("\\",
+                    "").Replace(":", "").Replace("\"", "");
                     <li id="@fileId">
                         @file
                         <button type="button" class="delete-button deleteButton" data-file="@file">Delete</button>
@@ -105,41 +140,76 @@
     </div>
 
     <div>
-        <label>Ballot Style Links:</label>
+        <div class="label-button-pair"><label>Ballot Style Links:</label>
+            <button type="button" id="ballotStyleLinksInfoButton" class="popoverButton"
+                popovertarget="ballotStyleLinksInfo" popovertargetaction="toggle">ⓘ</button>
+        </div>
+
+        <div popover id="ballotStyleLinksInfo" class="popover-content">
+            <p>Ballot Style Link files should be:</p>
+            <ul>
+            <li>File type should be .csv</li>
+            <li>Files should be pipe delimited to prevent conflicts with commas in the content</li>
+            <li>Files should contain these columns in this order
+            <ol>
+            <li>Style_Code</li>
+            <li>Precinct_ID</li>
+            <li>Split_ID</li>
+            <li>QA_Link</li>
+            </ol>
+            </li>
+            </ul>
+            <button type="button" popovertarget="ballotStyleLinksInfo" popovertargetaction="hide">Close</button>
+        </div>
         <input type="file" name="BallotStyleLinksFile" />
         @if (Model.BallotStyleLinksFiles.Any())
-            {
-                <ul>
-                    @foreach (var file in Model.BallotStyleLinksFiles)
-                    {
-                        var fileId = "file-" + file.Replace(" ", "-").Replace(".", "").Replace("/", "").Replace("\\", "").Replace(":", "").Replace("\"", "");
-                        <li id="@fileId">
-                            @file
-                            <button type="button" class="delete-button deleteButton" data-file="@file">Delete</button>
-                        </li>
-                    }
-                </ul>
-            }
+        {
+            <ul>
+                @foreach (var file in Model.BallotStyleLinksFiles)
+                {
+                    var fileId = "file-" + file.Replace(" ", "-").Replace(".", "").Replace("/", "").Replace("\\",
+                    "").Replace(":", "").Replace("\"", "");
+                    <li id="@fileId">
+                        @file
+                        <button type="button" class="delete-button deleteButton" data-file="@file">Delete</button>
+                    </li>
+                }
+            </ul>
+        }
     </div>
 
     <div id="sample-ballot-section">
-    <label>Sample Ballot PDFs:</label>
-    <input type="file" name="UploadedSampleBallotFiles" multiple />
-    @if (Model.SampleBallotFiles.Any())
-    {
-        <ul>
-            @foreach (var file in Model.SampleBallotFiles)
-            {
-                var fileId = "file-" + file.Replace(" ", "-").Replace(".", "").Replace("/", "").Replace("\\", "").Replace(":", "").Replace("\"", "");
-                <li id="@fileId">
-                    @file
-                    <button type="button" class="delete-button deleteButton" data-file="@file">Delete</button>
-                </li>
-            }
-        </ul>
-        <button type="button" class="deleteButton" id="delete-all-sampleballots" style="margin-top:0.5em;">Delete All Sample Ballots</button>
-    }
-</div>
+        <div class="label-button-pair"><label>Sample Ballot PDFs</label>
+            <button type="button" id="sampleBallotInfoButton" class="popoverButton" popovertarget="sampleBallotInfo"
+                popovertargetaction="toggle">ⓘ</button>
+        </div>
+
+        <div popover id="sampleBallotInfo" class="popover-content">
+            <p>Sample Ballots should be:</p>
+            <ul>
+                <li>PDF files</li>
+                <li>Named BS# where the number matches the Ballot style</li>
+                <li>Optimized for web viewing (not scanned images)</li>
+            <button type="button" popovertarget="sampleBallotInfo" popovertargetaction="hide">Close</button>
+        </div>
+        <input type="file" name="UploadedSampleBallotFiles" multiple />
+        @if (Model.SampleBallotFiles.Any())
+        {
+            <ul>
+                @foreach (var file in Model.SampleBallotFiles)
+                {
+                    var fileId = "file-" + file.Replace(" ", "-").Replace(".", "").Replace("/", "").Replace("\\",
+                    "").Replace(":", "").Replace("\"", "");
+                    <li id="@fileId">
+                        @file
+                        <button type="button" class="delete-button deleteButton" data-file="@file">Delete</button>
+                    </li>
+                }
+            </ul>
+            <button type="button" class="deleteButton" id="delete-all-sampleballots" style="margin-top:0.5em;">Delete All
+                Sample Ballots</button>
+        }
+    </div>
 
 
     <button class="updateButton" type="submit">Update</button>
