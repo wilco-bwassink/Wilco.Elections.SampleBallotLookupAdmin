@@ -126,8 +126,10 @@ System.Diagnostics.Debug.WriteLine($"StatusFilePath set to: {StatusFilePath}");
             var voterListPath = Path.Combine(electionFolder, "voterlist");
             Directory.CreateDirectory(voterListPath);
             var filePath = Path.Combine(voterListPath, VoterListFile.FileName);
-            using var stream = new FileStream(filePath, FileMode.Create);
-            await VoterListFile.CopyToAsync(stream);
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await VoterListFile.CopyToAsync(stream);
+            }
 
             try
             {
