@@ -14,15 +14,15 @@ public class AdminApiController : ControllerBase
     }
 
     [HttpPost("delete-file")]
-    public IActionResult DeleteFile([FromForm] string electionName, [FromForm] string fileName)
+    public IActionResult DeleteFile([FromForm] string electionId, [FromForm] string fileName)
     {
-        if (string.IsNullOrWhiteSpace(electionName) || string.IsNullOrWhiteSpace(fileName))
+        if (string.IsNullOrWhiteSpace(electionId) || string.IsNullOrWhiteSpace(fileName))
             return BadRequest(new { success = false, error = "Missing parameters." });
 
         var baseUploadPath = _config["ElectionUploadSettings:BasePath"]
                              ?? Path.Combine(_env.WebRootPath, "uploads");
 
-        var electionPath = Path.Combine(baseUploadPath, electionName);
+        var electionPath = Path.Combine(baseUploadPath, electionId);
         var subdirs = new[] { "voterlist", "voteridmap", "ballotstylelinks", "sampleballots" };
 
         foreach (var sub in subdirs)
@@ -39,17 +39,17 @@ public class AdminApiController : ControllerBase
     }
 
     [HttpPost("delete-all-sampleballots")]
-    public IActionResult DeleteAllSampleBallots([FromForm] string electionName)
+    public IActionResult DeleteAllSampleBallots([FromForm] string electionId)
     {
-        Console.WriteLine($"Deleting all sample ballots for election: {electionName}");
+        Console.WriteLine($"Deleting all sample ballots for election: {electionId}");
 
-        if (string.IsNullOrWhiteSpace(electionName))
-            return BadRequest("Missing election name.");
+        if (string.IsNullOrWhiteSpace(electionId))
+            return BadRequest("Missing election ID.");
 
         var baseUploadPath = _config["ElectionUploadSettings:BasePath"]
                              ?? Path.Combine(_env.WebRootPath, "uploads");
 
-        var path = Path.Combine(baseUploadPath, electionName, "sampleballots");
+        var path = Path.Combine(baseUploadPath, electionId, "sampleballots");
         if (Directory.Exists(path))
         {
             foreach (var file in Directory.GetFiles(path))

@@ -10,18 +10,18 @@ namespace Wilco.Elections.SampleBallotLookup.Pages
             Console.WriteLine("✅ Reached OnPost");
 
             var form = Request.HasFormContentType ? Request.Form : null;
-            var electionName = form?["electionName"];
+            var electionId = form?["electionId"];
             var fileName = form?["fileName"];
 
-            if (string.IsNullOrWhiteSpace(electionName) || string.IsNullOrWhiteSpace(fileName))
+            if (string.IsNullOrWhiteSpace(electionId) || string.IsNullOrWhiteSpace(fileName))
             {
                 Console.WriteLine("❌ Missing form data");
                 return new JsonResult(new { success = false, error = "Missing form fields." });
             }
 
-            Console.WriteLine($"📨 Data: {electionName}, {fileName}");
+            Console.WriteLine($"📨 Data: {electionId}, {fileName}");
 
-            return new JsonResult(new { success = true, received = new { electionName, fileName } });
+            return new JsonResult(new { success = true, received = new { electionId, fileName } });
         }
     }
 }
