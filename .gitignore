@@ -368,3 +368,5 @@ Wilco.Elections.SampleBallotLookup/appsettings.Development.json
 Wilco.Elections.SampleBallotLookup/wwwroot/data/electionStatus.json
 
 Wilco.Elections.SampleBallotLookup/appsettings.json
+
+appsettings.json
