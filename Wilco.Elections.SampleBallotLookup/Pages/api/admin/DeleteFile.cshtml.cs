@@ -22,15 +22,15 @@ namespace DeleteFileRazorPageApp.Pages.Api.Admin
 
         public IActionResult OnPost()
         {
-            var electionName = Request.Form["electionName"];
+            var electionId = Request.Form["electionId"];
             var fileName = Request.Form["fileName"];
 
-            Console.WriteLine($"[DEBUG] POST: {electionName} / {fileName}");
+            Console.WriteLine($"[DEBUG] POST: {electionId} / {fileName}");
 
-            if (string.IsNullOrWhiteSpace(electionName) || string.IsNullOrWhiteSpace(fileName))
+            if (string.IsNullOrWhiteSpace(electionId) || string.IsNullOrWhiteSpace(fileName))
                 return BadRequest("Missing data.");
 
-            var basePath = Path.Combine(BaseUploadPath, electionName);
+            var basePath = Path.Combine(BaseUploadPath, electionId);
             var subdirs = new[] { "voterlist", "voteridmap", "ballotstylelinks", "sampleballots" };
 
             foreach (var sub in subdirs)

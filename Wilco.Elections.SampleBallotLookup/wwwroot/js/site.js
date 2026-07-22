@@ -1,30 +1,56 @@
 ﻿console.log("site.js loaded!");
 
 document.addEventListener("DOMContentLoaded", () => {
+  function buildAdminApiUrl(endpoint) {
+    const normalizedBasePath = (window.basePath || "").replace(/\/$/, "");
+    const normalizedEndpoint = endpoint.replace(/^\/+/, "");
+    return `${normalizedBasePath}/api/admin/${normalizedEndpoint}`;
+  }
+
+  const electionIdInput =
+    document.querySelector('input[name="ElectionId"]') ||
+    document.querySelector('input[name="SelectedElectionId"]');
+  const electionNameInput = document.querySelector('input[name="ElectionName"]');
+  const selectedElectionIdInput = document.querySelector(
+    'input[name="SelectedElectionId"]'
+  );
+
+  if (electionIdInput && electionNameInput && selectedElectionIdInput) {
+    electionNameInput.addEventListener("input", () => {
+      if (selectedElectionIdInput.value || electionIdInput.hasAttribute("readonly")) {
+        return;
+      }
+
+      const suggestedId = electionNameInput.value
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+
+      electionIdInput.value = suggestedId;
+    });
+  }
+
   document.querySelectorAll(".delete-button").forEach((button) => {
     button.addEventListener("click", () => {
       const fileName = button.dataset.file;
+      const electionId = electionIdInput ? electionIdInput.value : "";
 
-      const electionInput =
-        document.querySelector('input[name="ElectionName"]') ||
-        document.querySelector('input[name="SelectedElection"]');
-      const election = electionInput ? electionInput.value : "";
-
-      console.log("Sending AJAX delete for:", { election, fileName });
+      console.log("Sending AJAX delete for:", { electionId, fileName });
       console.log(
         "Encoded fetch body:",
-        `electionName=${encodeURIComponent(
-          election
+        `electionId=${encodeURIComponent(
+          electionId
         )}&fileName=${encodeURIComponent(fileName)}`
       );
 
-      fetch("api/admin/delete-fil", {
+      fetch(buildAdminApiUrl("delete-file"), {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: `electionName=${encodeURIComponent(
-          election
+        body: `electionId=${encodeURIComponent(
+          electionId
         )}&fileName=${encodeURIComponent(fileName)}`,
       })
         .then((res) => res.json())
@@ -57,25 +83,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const deleteAllButton = document.getElementById("delete-all-sampleballots");
   if (deleteAllButton) {
     deleteAllButton.addEventListener("click", () => {
-      const electionInput =
-        document.querySelector('input[name="ElectionName"]') ||
-        document.querySelector('input[name="SelectedElection"]');
-      const election = electionInput ? electionInput.value : "";
+      const electionId = electionIdInput ? electionIdInput.value : "";
 
-      if (!election) {
-        alert("Election name is missing.");
+      if (!electionId) {
+        alert("Election ID is missing.");
         return;
       }
 
       if (!confirm("Are you sure you want to delete all sample ballots?"))
         return;
 
-      fetch("api/admin/delete-all-sampleballots", {
+      fetch(buildAdminApiUrl("delete-all-sampleballots"), {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: `electionName=${encodeURIComponent(election)}`,
+        body: `electionId=${encodeURIComponent(electionId)}`,
       })
         .then((res) => res.json())
         .then((data) => {

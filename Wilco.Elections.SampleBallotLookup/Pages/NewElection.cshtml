@@ -6,25 +6,25 @@
 
 <div class="headerAndNav">
     <h2>New Election Panel</h2>
-    <div><a href="/sampleBallotAdmin">Lookup Admin</a> | <a href="/sampleBallotAdmin/newelection">Elections</a> | <a
-            href="/sampleBallotAdmin/ManageOfficials">Elected Officials</a></div>
+    <div><a asp-page="/Index">Lookup Admin</a> | <a asp-page="/NewElection">Elections</a> | <a
+            asp-page="/ManageOfficials">Elected Officials</a></div>
 </div>
 
 <!-- Election Selector -->
 <form method="get">
     <div>
-        <label for="SelectedElection">Choose Election:</label>
-        <select name="SelectedElection" onchange="this.form.submit()">
+        <label for="SelectedElectionId">Choose Election:</label>
+        <select name="SelectedElectionId" onchange="this.form.submit()">
             <option value="">Create New Election...</option>
             @foreach (var election in Model.ExistingElections)
             {
-                if (election == Model.SelectedElection)
+                if (election.ElectionId == Model.SelectedElectionId)
                 {
-                    <option value="@election" selected>@election</option>
+                    <option value="@election.ElectionId" selected>@election.ElectionName (@election.ElectionId)</option>
                 }
                 else
                 {
-                    <option value="@election">@election</option>
+                    <option value="@election.ElectionId">@election.ElectionName (@election.ElectionId)</option>
                 }
             }
         </select>
@@ -33,9 +33,22 @@
 
 <!-- Upload / Update Form -->
 <form method="post" enctype="multipart/form-data" asp-page-handler="Upload">
+    <input type="hidden" asp-for="SelectedElectionId" />
     <div>
-        <label>Election Name:</label>
-        <input type="text" name="ElectionName" value="@Model.ElectionName" />
+        <label asp-for="ElectionId">Election ID</label>
+        @if (string.IsNullOrWhiteSpace(Model.SelectedElectionId))
+        {
+            <input asp-for="ElectionId" class="form-control" />
+        }
+        else
+        {
+            <input asp-for="ElectionId" class="form-control" readonly />
+        }
+        <small>Used for file paths and database imports. New IDs are normalized to letters, numbers, and hyphens.</small>
+    </div>
+    <div>
+        <label asp-for="ElectionName">Election Name</label>
+        <input asp-for="ElectionName" class="form-control" />
     </div>
     <div>
         <label asp-for="ElectionNameSpanish">Spanish Election Name</label>
@@ -216,10 +229,11 @@
 </form>
 
 <!-- Delete Entire Election -->
-@if (!string.IsNullOrWhiteSpace(Model.SelectedElection))
+@if (!string.IsNullOrWhiteSpace(Model.SelectedElectionId))
 {
     <form method="post" asp-page-handler="DeleteElection">
-        <input type="hidden" name="ElectionName" value="@Model.SelectedElection" />
+        <input type="hidden" asp-for="SelectedElectionId" />
+        <input type="hidden" asp-for="ElectionId" />
         <button type="submit" class="deleteButton">
             Delete This Election
         </button>
